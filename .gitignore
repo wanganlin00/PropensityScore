@@ -3,21 +3,6 @@
 .RData
 .Ruserdata
 
-# 忽略所有文件
-*
-
-# 不忽略 .gitignore 文件本身及其他文件
-!*.gitignore
-!*.qmd
-!*.html
-
-# 不忽略目录及其内部的所有内容
-!/docs/
-!/docs/**
-!/data/
-
-
-
-
-
-/.quarto/
+/.quarto
+/_docs
+*_cache
