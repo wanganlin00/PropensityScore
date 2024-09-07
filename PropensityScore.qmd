@@ -1,9 +1,5 @@
 # 倾向性评分 {.unnumbered}
 
-[Applied Propensity Score Analysis with R](https://psa.bryer.org/index.html)
-
-<https://ehsanx.github.io/EpiMethods/propensityscore.html>
-
 倾向性评分最大的优势是将多个混杂因素的多维影响用一维的倾向值（接受某处理的概率）来表示，即**倾向性评分值（Propensity Score, PS）**，从而降低协变量的维度，因此该方法尤其适用于协变量较多的情况。
 
 ```{r eval=FALSE}

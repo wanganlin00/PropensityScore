@@ -3,7 +3,7 @@ project:
   output-dir: _docs
 
 book:
-  title: "PropensityScore"
+  title: "Propensity Score"
   date: today
   chapters:
     - index.qmd
