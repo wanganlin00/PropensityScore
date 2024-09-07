@@ -1,6 +1,4 @@
-## 参考文献
-
-<https://pubmed.ncbi.nlm.nih.gov/34268425/>
+# PSM
 
 ## 数据
 
@@ -18,6 +16,10 @@ x.Gender <-rep(0:1,c(400,600))# 400 females and 600 males
 set.seed(2020)
 x.Age <-round(abs(rnorm(1000,mean=45,sd=15)))
 
+
+# 模拟数据的真实PS值
+z<-(x.Age-45)/15-(x.Age-45)^2/100+2*x.Gender
+tps <- exp(z)/(1+exp(z)) # The true PS
 
 set.seed(123)
 Smoke <- as.numeric(runif(1000)< tps)

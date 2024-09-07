@@ -14,8 +14,6 @@ if(!require(psa)) remotes::install_github('jbryer/psa', dependencies = 'Enhances
 
 倾向性评分只是一个分数（P值），自己并没有均衡协变量（混杂因素）的能力，利用 PS 值均衡组间协变量分布的方法有**匹配（matching）**、**分层（stratification）**、**协变量调整（covariate adjustment）**和**加权（weighting）**等。其中协变量调整又可以称为倾向性评分回归、倾向性评分矫正等。
 
-
-
 ## 预处理
 
 用于倾向性评分的数据要进行一些预处理，比如因子化 和 **缺失值处理** 如算法插补（KNN、随机森林等），
