@@ -3,11 +3,20 @@
 .RData
 .Ruserdata
 
-
+# 忽略所有文件
 *
 
+# 不忽略 .gitignore 文件本身
+!.gitignore
+!*.qmd
 !*.gitignore
-
 !*.html
 
+# 不忽略 docs 目录及其内部的所有内容
 !/docs/
+!/docs/**
+!/data/
+
+
+
+
