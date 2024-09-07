@@ -12,7 +12,7 @@ book:
         - PSM.qmd
         - stratification.qmd
         - matching.qmd
-        # - weighting.qmd
+        - weighting.qmd
         # - covariate_adjustment.qmd
 
 
