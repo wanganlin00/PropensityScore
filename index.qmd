@@ -1,0 +1,7 @@
+# 推荐阅读 {.unnumbered}
+
+1.  [Propensity score matching with R: conventional methods and new features](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8246231/)
+
+2.  [Applied Propensity Score Analysis with R](https://psa.bryer.org/index.html)
+
+3.  

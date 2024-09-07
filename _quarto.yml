@@ -1,0 +1,46 @@
+project:
+  type: book
+  output-dir: _docs
+
+book:
+  title: "PropensityScore"
+  date: today
+  chapters:
+    - index.qmd
+    - part: PropensityScore.qmd
+      chapters:
+        - PSM.qmd
+        - stratification.qmd
+        - matching.qmd
+        # - weighting.qmd
+        # - covariate_adjustment.qmd
+
+
+execute:
+  cache: true
+  message: false
+  warning: false
+  
+toc: true
+toc-expand: true
+toc-depth: 4
+toc-location: right
+number-sections: true
+number-depth: 4
+
+code-fold: true
+code-link: true
+code-summary: "Show the code"
+
+knitr:
+  opts_chunk: 
+    comment: "#>" 
+    collapse: TRUE
+
+format:
+  html:
+    theme: cosmo
+
+
+editor: visual
+
