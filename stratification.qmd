@@ -1,37 +1,80 @@
 # 分层（Stratification）
 
-## 估计倾向得分（逻辑回归）
+## 探索性分析
 
 ```{r}
 data(lalonde, package='Matching')
-glimpse(lalonde)
+lalonde <- lalonde %>% mutate(across(treat, as.factor))
+str(lalonde)
+```
 
-lalonde_formu <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
+```{r}
+ggplot(lalonde, aes(x = age, y = educ, shape = factor(married), color =treat)) + 
+	geom_point() + 
+    scale_color_manual(values = c(`0`="pink",`1`="skyblue"))+
+	theme(legend.position = 'bottom')
+```
+
+```{r}
+GGally::ggpairs(
+	lalonde %>% select(age,educ, re78, treat),
+	columns = c(1,2,3),
+	mapping = ggplot2::aes(color = treat == 1),
+	upper = list(continuous = 'cor'),
+	lower = list(continuous = GGally::wrap("points", alpha = 0.3), 
+				 combo = GGally::wrap("dot_no_facet", alpha = 0.4)),
+	diag = list(continuous = "densityDiag", discrete = "barDiag", na = "naDiag", alpha = 0.4),
+)
+```
+
+## 估计倾向得分（逻辑回归）
+
+```{r}
+lalonde_formula <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
     hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2)
-lr_out <- glm(formula = lalonde_formu,
+
+logit_fit <- glm(formula = lalonde_formula,
               data = lalonde,
               family = binomial(link = 'logit'))
 ```
 
-倾向性得分就是模型的拟合值，检查倾向得分的分布，以确保我们有良好的重叠
+倾向性得分就是模型的拟合值，
 
 ```{r}
-lalonde$lr_ps <- fitted(lr_out)
-
-ggplot(lalonde, aes(x = lr_ps, color = as.logical(treat))) + 
-    geom_density() +
-    xlab('Propensity Score')
+lalonde$ps <- fitted(logit_fit)
 ```
 
-### 分层
+检查倾向得分的分布，以确保我们有良好的重叠
+
+```{r}
+ggplot() +
+    geom_histogram(data = subset(lalonde, treat == 1), aes(x = ps, y = after_stat(count)),
+                   binwidth = 0.05, fill = "skyblue", color = "black", alpha = 0.7) +
+    geom_histogram(data = subset(lalonde, treat == 0), aes(x = ps, y = - after_stat(count)),
+                   binwidth = 0.05, fill = "pink", color = "black", alpha = 0.7) +
+    labs(y = "Count", x = "PS") 
+
+
+```
+
+```{r}
+
+
+ggplot(lalonde, aes(x = ps, color = treat)) + 
+    geom_density() +
+    xlab('Propensity Score')+
+    scale_color_manual(values = c(`0`="pink",`1`="skyblue"))
+```
+
+## 倾向得分分层
 
 根据倾向分数使用五分位数进行分层
 
 ```{r}
-breaks5 <- psa::get_strata_breaks(lalonde$lr_ps)
+breaks5 <- psa::get_strata_breaks(lalonde$ps)
 str(breaks5)
 
-lalonde$lr_strata5 <- cut(x = lalonde$lr_ps, 
+lalonde$lr_strata5 <- cut(x = lalonde$ps, 
                           breaks = breaks5$breaks, 
                           include.lowest = TRUE, 
                           labels = breaks5$labels$strata)
@@ -39,37 +82,42 @@ table(lalonde$treat, lalonde$lr_strata5)
 ```
 
 ```{r}
-ggplot(lalonde, aes(x = lr_ps, color = as.logical(treat))) + 
-	geom_density(aes(fill = as.logical(treat)), alpha = 0.2) +
+ggplot(lalonde, aes(x = ps, color = treat)) + 
+	geom_density(aes(fill = treat), alpha = 0.2) +
 	geom_vline(xintercept = breaks5$breaks, alpha = 0.5) +
 	geom_text(data = breaks5$labels, 
 			  aes(x = xmid, y = 0, label = strata),
 			  color = 'black', vjust = 1) +
 	xlab('Propensity Score') + ylab('Density') +
-	xlim(c(0, 1))
+	xlim(c(0, 1))+
+    scale_fill_manual(values = c(`0`="pink",`1`="skyblue"))
 ```
 
 ```{r}
 ggplot() +
 	geom_vline(xintercept = breaks5$breaks) +
-	geom_point(data = lalonde, aes(x = lr_ps, y = log(re78 + 1), color = as.logical(treat)), alpha = 0.5) +
+	geom_point(data = lalonde, aes(x = ps, y = log(re78 + 1), color = treat), alpha = 0.5) +
 	geom_text(data = breaks5$labels, aes(x = xmid, y = 0, label = strata), color = 'black', vjust = 1) +
-	xlab('Propensity Score')
+	xlab('Propensity Score')+
+    scale_color_manual(values = c(`0`="pink2",`1`="skyblue2"))
 ```
 
-### 查看平衡混杂效应
+## 平衡诊断
+
+### 效应大小
 
 ```{r}
-covars <- all.vars(lalonde_formu)
+covars <- all.vars(lalonde_formula)
 covars <- lalonde[,covars[-1]]
+
 PSAgraphics::cv.bal.psa(covariates = covars, 
                         treatment = lalonde$treat,
-                        propensity = lalonde$lr_ps,
+                        propensity = lalonde$ps,
                         strata = lalonde$lr_strata)
 
 ```
 
-#### 数值变量的协变量平衡图
+### 数值型协变量平衡图
 
 ```{r}
 PSAgraphics::box.psa(continuous = lalonde$age, 
@@ -80,7 +128,7 @@ PSAgraphics::box.psa(continuous = lalonde$age,
                      main = 'Covariate: age')
 ```
 
-#### 分类变量的协变量平衡图
+### 分类型协变量平衡图
 
 ```{r}
 PSAgraphics::cat.psa(categorical = lalonde$nodegr, 
@@ -94,11 +142,51 @@ PSAgraphics::cat.psa(categorical = lalonde$nodegr,
 ## 估计因果效应
 
 ```{r}
+lalonde %>% 
+ggplot(aes(x = ps, y = re78, color = treat)) + 
+	geom_point(alpha = 0.5) +
+	geom_smooth(method = 'loess', formula = y ~ x, alpha = 0.5) +
+	xlab('Propensity Score') +
+	theme(legend.position = 'bottom')
+
+```
+
+具有大约 95% 置信区间（灰色）的 Loess 回归线在整个倾向得分范围内重叠，说明异质或不均匀
+
+### 分层
+
+```{r}
+lalonde$treat <- as.numeric(lalonde$treat)-1
+dat <- lalonde |> mutate(
+	ate_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATM')
+)
+
+ggplot(dat, aes(x = ps, color = factor(treat))) + 
+	geom_density(aes(fill = factor(treat)), alpha = 0.2) +
+	geom_vline(xintercept = breaks5$breaks, alpha = 0.5) +
+	geom_text(data = breaks5$labels, 
+			  aes(x = xmid, y = 0, label = strata),
+			  color = 'black', vjust = 0, size = 4) +
+	xlab('Propensity Score') + ylab('Density') +
+	xlim(c(0, 1))
+```
+
+```{r}
+psa::stratification_plot(ps = dat$ps,
+					treatment = dat$treat,
+					outcome = dat$re78, 
+					n_strata = 5)
+```
+
+```{r}
 PSAgraphics::loess.psa(response = log(lalonde$re78 + 1),
                        treatment = lalonde$treat,
-                       propensity = lalonde$lr_ps)
+                       propensity = lalonde$ps)
 
-psa::loess_plot(ps = lalonde$lr_ps,
+psa::loess_plot(ps = lalonde$ps,
                 outcome = log(lalonde$re78 + 1),
                 treatment = lalonde$treat == 1,
                 outcomeTitle = 'log(re78)',
@@ -115,18 +203,107 @@ psa::loess_plot(ps = lalonde$lr_ps,
 ```{r}
 PSAgraphics::circ.psa(response = log(lalonde$re78 + 1), 
                       treatment = lalonde$treat == 1, 
-                      strata = lalonde$lr_strata5)
+                      strata = lalonde$lr_strata5,
+                      revc = T,
+                      xlab = 'Treatment',
+					  ylab = 'Control')
+```
+
+将绘制每个层的平均处理（x 轴）与对照（y 轴）的对比。均值被投影到垂直于单位线的线（即线y=x）， 以便刻度线表示差异的分布。绿色条对应于 95% 置信区间。圆圈的大小与每个层内的样本大小成正比。 因为y=x落在该线上的点表示零差（即y−x=0). 推而广之，如果绿线表示的置信区间跨越单位线，则无法否定原假设。然而，在此示例中，存在统计学上显著的处理效果。
+
+### 平均治疗效应ATE
+
+```{r}
+ggplot() +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, y = after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, weight = ate_weight, y = after_stat(count)),
+				   bins = 50, 
+				   fill = "skyblue2", alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, y = -after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, weight = ate_weight, y = -after_stat(count)),
+				   bins = 50, 
+				   fill = "pink2", alpha = 0.5) +
+	ggtitle('Average Treatment Effect (ATE)')
+```
+
+### **接受治疗者的平均治疗效果 （ATT）**
+
+```{r}
+ggplot() +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, y = after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, weight = att_weight, y = after_stat(count)),
+				   bins = 50, 
+				   fill = "skyblue2", alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, y = -after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, weight = att_weight, y = -after_stat(count)),
+				   bins = 50, 
+				   fill = "pink2", alpha = 0.5) +
+	ggtitle('Average Treatment Effect Among the Treated (ATT)')
+```
+
+### **对照组的平均治疗效果 （ATC）**
+
+```{r}
+ggplot() +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, y = after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, weight = atc_weight, y = after_stat(count)),
+				   bins = 50, 
+				   fill = "skyblue2", alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, y = -after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, weight = atc_weight, y = -after_stat(count)),
+				   bins = 50, 
+				   fill = "pink", alpha = 0.5) +
+	ggtitle('Average Treatment Effect Among the Control (ATC)')
+```
+
+### **Average Treatment Effect Among the Evenly Matched (ATM)**
+
+```{r}
+ggplot() +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, y = after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 1,],
+				   aes(x = ps, weight = atm_weight, y = after_stat(count)),
+				   bins = 50, 
+				   fill = "skyblue2", alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, y = -after_stat(count)),
+				   bins = 50, alpha = 0.5) +
+	geom_histogram(data = dat[dat$treat == 0,],
+				   aes(x = ps, weight = atm_weight, y = -after_stat(count)),
+				   bins = 50, 
+				   fill = "pink2", alpha = 0.5) +
+	ggtitle('Average Treatment Effect Among the Evenly Matched (ATM)')
 ```
 
 ## 敏感性分析
 
 评估该效果的稳健性
 
-### 估计倾向得分（分类树）
+Rosenbaum （2012） 建议另一种测试灵敏度的方法是测试原假设两次。我们将在这里使用分类树方法来估计倾向得分和分层。
 
 ```{r}
 library(tree)
-tree_out <- tree::tree(lalonde_formu,
+tree_out <- tree::tree(lalonde_formula,
                        data = lalonde)
 
 plot(tree_out); text(tree_out)

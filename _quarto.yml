@@ -10,10 +10,11 @@ book:
     - part: PropensityScore.qmd
       chapters:
         - PSM.qmd
-        - stratification.qmd
         - matching.qmd
+        - stratification.qmd
         - weighting.qmd
         # - covariate_adjustment.qmd
+        - SensitivityAnalysis.qmd
 
 
 execute:

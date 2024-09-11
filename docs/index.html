@@ -6,9 +6,9 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
-<meta name="dcterms.date" content="2024-09-07">
+<meta name="dcterms.date" content="2024-09-11">
 
-<title>PropensityScore</title>
+<title>Propensity Score</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -96,7 +96,7 @@ ul.task-list li input[type="checkbox"] {
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
     <div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PropensityScore</a> 
+      <a href="./">Propensity Score</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -129,20 +129,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./stratification.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></span></a>
+  <a href="./matching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./matching.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span></a>
+  <a href="./stratification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./weighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">加权</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SensitivityAnalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">敏感性分析</span></span></a>
   </div>
 </li>
       </ul>
@@ -157,7 +163,10 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#推荐阅读" id="toc-推荐阅读" class="nav-link active" data-scroll-target="#推荐阅读">推荐阅读</a></li>
+  <li><a href="#推荐阅读" id="toc-推荐阅读" class="nav-link active" data-scroll-target="#推荐阅读">推荐阅读</a>
+  <ul>
+  <li><a href="#数据来源" id="toc-数据来源" class="nav-link" data-scroll-target="#数据来源">数据来源</a></li>
+  </ul></li>
   </ul>
 </nav>
     </div>
@@ -166,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">PropensityScore</h1>
+<h1 class="title">Propensity Score</h1>
 </div>
 
 
@@ -177,7 +186,7 @@ ul.task-list li input[type="checkbox"] {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 7, 2024</p>
+      <p class="date">September 11, 2024</p>
     </div>
   </div>
   
@@ -194,10 +203,16 @@ ul.task-list li input[type="checkbox"] {
 <ol type="1">
 <li><p><a href="https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8246231/">Propensity score matching with R: conventional methods and new features</a></p></li>
 <li><p><a href="https://psa.bryer.org/index.html">Applied Propensity Score Analysis with R</a></p></li>
-<li></li>
+<li><p><a href="https://ehsanx.github.io/EpiMethods/propensityscore.html" class="uri">https://ehsanx.github.io/EpiMethods/propensityscore.html</a></p></li>
+</ol>
+<section id="数据来源" class="level2">
+<h2 class="anchored" data-anchor-id="数据来源">数据来源</h2>
+<ol type="1">
+<li><a href="https://hbiostat.org/data/" class="uri">https://hbiostat.org/data/</a> <a href="https://hbiostat.org/data/repo/rhc" class="uri">https://hbiostat.org/data/repo/rhc</a></li>
 </ol>
 
 
+</section>
 </section>
 
 </main> <!-- /main -->

@@ -1,1 +1,249 @@
 # 加权
+
+<https://ehsanx.github.io/psm/cat.html>
+
+![](images/clipboard-935442915.png){fig-align="center" width="50%"}
+
+$$
+\begin{equation}\begin{aligned}
+Treatment\ Effect = \frac{\sum Y_{i}A_{i}w_{i}}{\sum A_{i} w_{i}} - \frac{\sum Y_{i}(1 - A_{i}) w_{i}}{\sum (1 - A_{i}) w_{i} }
+\end{aligned}\end{equation}
+$$
+
+## 案例1
+
+```{r}
+data(lalonde, package='Matching')
+ps_formula <- treat ~ age + I(age^2) + educ + I(educ^2) + black +
+    hisp + married + nodegr + re74  + I(re74^2) + re75 + I(re75^2) + u74 + u75
+
+ps_fit <- glm(formula = ps_formula,
+              data = lalonde,
+              family = binomial(link = 'logit'))
+
+lalonde$ps <- fitted(ps_fit)
+
+PSAgraphics::cv.bal.psa(covariates = lalonde[,all.vars(ps_formula)[-1]],
+                        treatment = lalonde$treat,
+                        propensity = lalonde$ps,
+                        strata = 5)
+```
+
+### 平均治疗效应ATE公式
+
+$$
+\begin{equation}\begin{aligned}
+w_{ATE} = \frac{A_i}{PS_i} + \frac{1 - A_i}{1 - PS_i}
+\end{aligned}\end{equation}
+$$
+
+```{r}
+
+dat <- lalonde |> mutate(
+	ate_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATE'),
+	att_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATT'),
+	atc_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATC'),
+	atm_weight = psa::calculate_ps_weights(treat, ps, estimand = 'ATM')
+)
+psa::weighting_plot(ps = dat$ps,
+					treatment = dat$treat,
+					outcome = dat$re78, 
+					estimand = 'ATE')
+```
+
+```{r}
+# Check Balance with ATE Weights
+glm(formula = ps_formula,
+    data = dat,
+    family = quasibinomial(link = 'logit'),
+    weights = ate_weight
+) |> summary()
+
+# 估计 ATE
+lm(formula = re78 ~ treat, 
+   data = dat,
+   weights = ate_weight) |> summary()
+
+psa::treatment_effect(treatment = dat$treat,
+                      outcome = dat$re78,
+                      weights = dat$ate_weight)
+```
+
+### ATT
+
+$$
+\begin{equation}\begin{aligned}
+w_{ATT} = \frac{PS_i A_i}{PS_i} + \frac{PS_i (1 - A_i)}{1 - PS_i}
+\end{aligned}\end{equation}
+$$
+
+```{r}
+# Check Balance with ATT Weights
+glm(formula = ps_formula,
+    data = dat,
+    family = quasibinomial(link = 'logit'),
+    weights = att_weight
+) |> summary()
+
+# Estimate ATT
+lm(formula = re78 ~ treat, 
+   data = dat,
+   weights = att_weight) |> summary()
+
+psa::treatment_effect(treatment = dat$treat,
+                      outcome = dat$re78,
+                      weights = dat$att_weight)
+```
+
+### ATC
+
+$$
+\begin{equation}\begin{aligned}
+w_{ATC} = \frac{(1 - PS_i) A_i}{PS_i} + \frac{(1 - e_i)(1 - A_i)}{1 - PS_i}
+\end{aligned}\end{equation}
+$$
+
+```{r}
+# Check Balance with ATC Weights
+glm(formula = ps_formula,
+    data = dat,
+    family = quasibinomial(link = 'logit'),
+    weights = atc_weight
+) |> summary()
+
+# Estimate ATC
+lm(formula = re78 ~ treat, 
+   data = dat,
+   weights = atc_weight) |> summary()
+
+psa::treatment_effect(treatment = dat$treat,
+                      outcome = dat$re78,
+                      weights = dat$atc_weight)
+```
+
+### **Average Treatment Effect Among the Evenly Matched (ATM)**
+
+$$
+\begin{equation}\begin{aligned}
+w_{ATM} = \frac{min\{PS_i, 1 - PS_i\}}{A_i PS_i (1 - A_i)(1 - PS_i)}
+\end{aligned}\end{equation}
+$$
+
+```{r}
+# Check Balance with ATC Weights
+glm(formula = ps_formula,
+    data = dat,
+    family = quasibinomial(link = 'logit'),
+    weights = atm_weight
+) |> summary()
+
+# Estimate ATC
+lm(formula = re78 ~ treat, 
+   data = dat,
+   weights = atm_weight) |> summary()
+
+psa::treatment_effect(treatment = dat$treat,
+                      outcome = dat$re78,
+                      weights = dat$atm_weight)
+```
+
+# 案例2
+
+```{r}
+library(twang)
+
+data(AOD)
+head(AOD)
+```
+
+```{r}
+table(AOD$treat)
+```
+
+## 倾向分数的估计
+
+多分类变量
+
+### VGLM
+
+拟合向量广义线性模型 （VGLMs） 来拟合具有 3 类暴露变量的倾向得分模型：
+
+```{r}
+require(VGAM)
+psFormula <- "treat ~ illact + crimjust + subprob + subdep + white"
+ps.model <- vglm(psFormula,family=multinomial, data=AOD)
+AOD$ps <- data.frame(fitted(ps.model))
+
+AOD %>% head() %>% 
+    unnest(cols = c(ps),names_sep = "_")
+```
+
+```{r}
+require(ggplot2)
+ggplot(AOD, aes(x=ps[,1], fill=factor(treat))) +
+  geom_density(alpha=0.5) +
+  scale_fill_discrete(name="Treatment Group") +
+  labs(title="Density Plot of Propensity Scores by Treatment Group",
+       x="Propensity Score",
+       y="Density") +
+  theme_minimal()
+```
+
+### GBM
+
+通过 GBM 估计倾向分数
+
+```{r}
+set.seed(1235)
+mnps.AOD.ATT <- mnps(treat ~ illact + crimjust + subprob + subdep + white, 
+                 data = AOD, 
+                 interaction.depth = 3,
+                 estimand = "ATT", 
+                 treatATT = "community", # the treated
+                 verbose = FALSE, 
+                 stop.method = "es.mean", 
+                 n.trees = 1000)
+
+```
+
+## IPW 计算
+
+![](images/clipboard-1735229785.png)
+
+将PS转换为IPW
+
+```{r}
+AOD$w.ATT <- twang::get.weights(mnps.AOD.ATT, stop.method = "es.mean")
+summary(AOD$w.ATT)
+
+by(AOD$w.ATT, AOD$treat, summary)
+```
+
+## weighted_data平衡诊断
+
+```{r}
+twang::bal.table(mnps.AOD.ATT, 
+                 digits = 2, 
+                 collapse.to = "covariate")[,c("max.std.eff.sz",
+                                               "stop.method")]
+```
+
+```{r}
+plot(mnps.AOD.ATT, plots = 3)
+```
+
+## 加权结局模型的效应估计
+
+```{r}
+require(survey)
+design.mnps.ATT <- svydesign(ids=~1, weights=~w.ATT, data=AOD)
+fit <- svyglm(suf12 ~ treat, design = design.mnps.ATT)
+require(Publish)
+publish(fit, intercept = FALSE)
+```
+
+## 连续变量
+
+```{r}
+require(twangContinuous)
+```

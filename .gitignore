@@ -6,3 +6,5 @@
 /.quarto
 /_docs
 *_cache
+
+/.quarto/

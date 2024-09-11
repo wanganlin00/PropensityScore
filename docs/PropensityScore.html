@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.4.555">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>PropensityScore - 倾向性评分</title>
+<title>Propensity Score - 倾向性评分</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -96,7 +96,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-submit-button-title": "Submit",
     "search-label": "Search"
   }
-}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+}</script><script src="site_libs/kePrint-0.0.1/kePrint.js"></script><link href="site_libs/lightable-0.0.1/lightable.css" rel="stylesheet">
+<script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
 const typesetMath = (el) => {
   if (window.MathJax) {
     // MathJax Typeset
@@ -141,7 +142,7 @@ window.Quarto = {
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PropensityScore</a> 
+      <a href="./">Propensity Score</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -174,20 +175,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./stratification.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></span></a>
+  <a href="./matching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./matching.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span></a>
+  <a href="./stratification.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./weighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">加权</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SensitivityAnalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">敏感性分析</span></span></a>
   </div>
 </li>
       </ul>
@@ -200,9 +207,32 @@ window.Quarto = {
         <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99"><h2 id="toc-title">Table of contents</h2>
    
   <ul>
-<li><a href="#%E5%88%86%E7%B1%BB" id="toc-分类" class="nav-link active" data-scroll-target="#%E5%88%86%E7%B1%BB">分类</a></li>
+<li>
+<a href="#%E5%8E%9F%E7%90%86" id="toc-原理" class="nav-link active" data-scroll-target="#%E5%8E%9F%E7%90%86">原理</a>
+  <ul>
+<li><a href="#%E9%A2%84%E6%B5%8B%E7%9B%AE%E6%A0%87" id="toc-预测目标" class="nav-link" data-scroll-target="#%E9%A2%84%E6%B5%8B%E7%9B%AE%E6%A0%87">预测目标</a></li>
+  <li><a href="#%E5%9B%A0%E6%9E%9C%E6%8E%A8%E6%96%AD" id="toc-因果推断" class="nav-link" data-scroll-target="#%E5%9B%A0%E6%9E%9C%E6%8E%A8%E6%96%AD">因果推断</a></li>
+  <li><a href="#identifiability-assumptions" id="toc-identifiability-assumptions" class="nav-link" data-scroll-target="#identifiability-assumptions">Identifiability Assumptions</a></li>
+  </ul>
+</li>
   <li><a href="#%E9%A2%84%E5%A4%84%E7%90%86" id="toc-预处理" class="nav-link" data-scroll-target="#%E9%A2%84%E5%A4%84%E7%90%86">预处理</a></li>
-  <li><a href="#%E6%B5%81%E7%A8%8B" id="toc-流程" class="nav-link" data-scroll-target="#%E6%B5%81%E7%A8%8B">流程</a></li>
+  <li>
+<a href="#%E6%B5%81%E7%A8%8B" id="toc-流程" class="nav-link" data-scroll-target="#%E6%B5%81%E7%A8%8B">流程</a>
+  <ul>
+<li><a href="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E6%9A%B4%E9%9C%B2%E6%A8%A1%E5%9E%8B" id="toc-估计倾向得分暴露模型" class="nav-link" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E6%9A%B4%E9%9C%B2%E6%A8%A1%E5%9E%8B">估计倾向得分：暴露模型</a></li>
+  <li>
+<a href="#%E5%B9%B3%E8%A1%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E6%96%B9%E6%B3%95" id="toc-平衡倾向得分方法" class="nav-link" data-scroll-target="#%E5%B9%B3%E8%A1%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E6%96%B9%E6%B3%95">平衡倾向得分方法</a>
+  <ul class="collapse">
+<li><a href="#standardized-mean-differences-smd" id="toc-standardized-mean-differences-smd" class="nav-link" data-scroll-target="#standardized-mean-differences-smd">standardized mean differences (SMD)</a></li>
+  <li><a href="#variance-ratiovr" id="toc-variance-ratiovr" class="nav-link" data-scroll-target="#variance-ratiovr">Variance ratio（VR）</a></li>
+  <li><a href="#overlapping-histograms" id="toc-overlapping-histograms" class="nav-link" data-scroll-target="#overlapping-histograms">overlapping histograms</a></li>
+  </ul>
+</li>
+  <li><a href="#%E4%BC%B0%E8%AE%A1%E5%9B%A0%E6%9E%9C%E6%95%88%E5%BA%94%E7%BB%93%E5%B1%80%E5%BB%BA%E6%A8%A1" id="toc-估计因果效应结局建模" class="nav-link" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%9B%A0%E6%9E%9C%E6%95%88%E5%BA%94%E7%BB%93%E5%B1%80%E5%BB%BA%E6%A8%A1">估计因果效应：结局建模</a></li>
+  <li><a href="#%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A" id="toc-敏感性分析报告" class="nav-link" data-scroll-target="#%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90%E6%8A%A5%E5%91%8A"><strong>敏感性分析报告</strong></a></li>
+  </ul>
+</li>
+  <li><a href="#prerequisites" id="toc-prerequisites" class="nav-link" data-scroll-target="#prerequisites">Prerequisites</a></li>
   </ul></nav>
     </div>
 <!-- main -->
@@ -221,71 +251,510 @@ window.Quarto = {
   
 
 
-</header><p><a href="https://psa.bryer.org/index.html">Applied Propensity Score Analysis with R</a></p>
-<p><a href="https://ehsanx.github.io/EpiMethods/propensityscore.html" class="uri">https://ehsanx.github.io/EpiMethods/propensityscore.html</a></p>
-<p>倾向性评分最大的优势是将多个混杂因素的多维影响用一维的倾向值（接受某处理的概率）来表示，即<strong>倾向性评分值（Propensity Score, PS）</strong>，从而降低协变量的维度，因此该方法尤其适用于协变量较多的情况。</p>
-<div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://github.com/jbryer/psa">psa</a></span><span class="op">)</span><span class="op">)</span> <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</details>
-</div>
-<section id="分类" class="level2"><h2 class="anchored" data-anchor-id="分类">分类</h2>
-<p>倾向性评分只是一个分数（P值），自己并没有均衡协变量（混杂因素）的能力，利用 PS 值均衡组间协变量分布的方法有<strong>匹配（matching）</strong>、<strong>分层（stratification）</strong>、<strong>协变量调整（covariate adjustment）</strong>和<strong>加权（weighting）</strong>等。其中协变量调整又可以称为倾向性评分回归、倾向性评分矫正等。</p>
-</section><section id="预处理" class="level2"><h2 class="anchored" data-anchor-id="预处理">预处理</h2>
-<p>用于倾向性评分的数据要进行一些预处理，比如因子化 和 <strong>缺失值处理</strong> 如算法插补（KNN、随机森林等），</p>
-</section><section id="流程" class="level2"><h2 class="anchored" data-anchor-id="流程">流程</h2>
-<p>倾向性评分的一般步骤为：</p>
-<ol type="1">
-<li>
-<p><strong>选择倾向得分估计模型</strong></p>
-<ol type="a">
-<li><p>估计倾向得分：倾向得分是给定一组观察到的 covaraites 接受治疗、干预或暴露的条件概率 。PS 值的估计是<strong>以处理因素作为因变量，其他混杂因素作为自变量</strong>，通过建立一个模型来估计每个研究对象接受处理因素的可能性。目前用于估计 PS 值的方法有logistic 回归，分类树，Probit 回归、Bootstrapping、随机森林等。其中 logistic 回归是目前最常用的方法。</p></li>
-<li><p>平衡诊断 balance diagnosis：对于处理单元和对照单元成对的匹配方法，可以使用相关样本检验（例如，连续变量的 t 检验和分类变量的卡方检验），但是犯 I 类和 II 类错误的可能性非常高。</p></li>
-</ol>
-<p><code>PSAgraphics</code>标准化的效应大小和图形表示，建议effect sizes小于 0.1。 连续变量的平衡诊断箱线图，分类变量的条形图</p>
-<ol start="3" type="a">
-<li>重复前2步，直到优化足够的平衡</li>
-</ol>
-</li>
-<li>
-<p><strong>估计因果关系</strong></p>
-<p><em>因果关系的反事实模型</em></p>
-<p>因果推断的基本难题：<strong><em>Y=ZY<sup>1</sup> +(1-Z)Y<sup>0</sup> , Z=0 或 1</em></strong>，2个实际结果，2个反事实结果</p>
+</header><p>倾向性评分最大的优势是将多个混杂因素的多维影响用一维的倾向值（接受某处理的概率）来表示，即<strong>倾向性评分值（Propensity Score, PS）</strong>，从而降低协变量的维度，因此该方法尤其适用于协变量较多的情况。</p>
+<section id="原理" class="level2"><h2 class="anchored" data-anchor-id="原理">原理</h2>
+<section id="预测目标" class="level3"><h3 class="anchored" data-anchor-id="预测目标">预测目标</h3>
+<p><img src="images/clipboard-3336473297.png" class="img-fluid"></p>
+</section><section id="因果推断" class="level3"><h3 class="anchored" data-anchor-id="因果推断">因果推断</h3>
+<p><img src="images/clipboard-3139417557.png" class="img-fluid"></p>
+<p>A： risk factors，例如治疗、干预、暴露</p>
+<p>L：confounding factors，例如年龄、性别、bmi</p>
+<p>Y：outcome，例如是否死亡，是否患病</p>
+<p>因果推断的基本难题：2个实际结果，2个反事实结果</p>
+<p><span class="math display">\[
+Y=A\times Y(A=1) +(1-A)\times Y(A=0) \\ 其中A=0 或 1\\
+\]</span></p>
+<p><strong><em>Rubin’s Causal Model</em></strong></p>
 <p>个体处理效应：</p>
 <p><span class="math display">\[
 ITE=\tau_i=y_i^1-y_i^0
 \]</span></p>
-<p><strong><em>Rubin’s Causal Model</em></strong></p>
 <p>平均处理效应 Average Treatment Effect (ATE)</p>
 <p><span class="math display">\[
 \widehat {ATE} =E(\tau)=E(Y^1-Y^0)=E(Y^1)-E(Y^0)
 \]</span></p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://haozhu233.github.io/kableExtra/">kableExtra</a></span><span class="op">)</span></span>
+<span><span class="va">Person</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"John"</span>,<span class="st">"Jim"</span>,<span class="st">"Jake"</span>,<span class="st">"Cody"</span>,<span class="st">"Luke"</span><span class="op">)</span></span>
+<span><span class="va">Y1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">195</span>, <span class="fl">100</span>, <span class="fl">210</span>, <span class="fl">155</span>, <span class="fl">165</span><span class="op">)</span></span>
+<span><span class="va">Y0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">245</span>, <span class="fl">160</span>, <span class="fl">270</span>, <span class="fl">210</span>, <span class="fl">230</span><span class="op">)</span></span>
+<span><span class="va">PotentialOutcomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">Person</span>, <span class="va">Y1</span>, <span class="va">Y0</span>, TE <span class="op">=</span> <span class="va">Y1</span><span class="op">-</span><span class="va">Y0</span><span class="op">)</span></span>
+<span><span class="va">mean.values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">Y1</span><span class="op">)</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">Y0</span><span class="op">)</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">TE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">PotentialOutcomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span>, <span class="va">mean.values</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>             col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Person"</span>, <span class="st">"Y(1)"</span>, <span class="st">"Y(0)"</span>, <span class="st">"TE"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html">row_spec</a></span><span class="op">(</span><span class="fl">6</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#D7261E"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Person</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Y(1)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Y(0)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">TE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">John</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">-50</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jim</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">-60</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jake</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">-60</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cody</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">-55</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Luke</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">230</td>
+<td style="text-align: right;">-65</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">165</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">223</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">-58</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Person</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"John"</span>,<span class="st">"Jim"</span>,<span class="st">"Jake"</span>,<span class="st">"Cody"</span>,<span class="st">"Luke"</span><span class="op">)</span></span>
+<span><span class="va">Y1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="cn">NA</span>, <span class="fl">100</span>, <span class="cn">NA</span>, <span class="fl">155</span>, <span class="cn">NA</span><span class="op">)</span></span>
+<span><span class="va">Y0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">245</span>, <span class="cn">NA</span>, <span class="fl">270</span>, <span class="cn">NA</span>, <span class="fl">230</span><span class="op">)</span></span>
+<span><span class="va">PotentialOutcomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">Person</span>, <span class="va">Y1</span>, <span class="va">Y0</span>, TE <span class="op">=</span> <span class="va">Y1</span><span class="op">-</span><span class="va">Y0</span><span class="op">)</span></span>
+<span><span class="va">mean.values</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">Y1</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">Y0</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,</span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">TE</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">PotentialOutcomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cbind.html">rbind</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">mean.values</span>,<span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">PotentialOutcomes</span><span class="op">[</span><span class="fl">6</span>,<span class="fl">4</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">Y1</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">-</span> </span>
+<span>                 <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span><span class="op">$</span><span class="va">Y0</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>,<span class="fl">1</span><span class="op">)</span></span>
+<span></span>
+<span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">PotentialOutcomes</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>             col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Person"</span>, <span class="st">"Y(1)"</span>, <span class="st">"Y(0)"</span>, <span class="st">"TE"</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html">row_spec</a></span><span class="op">(</span><span class="fl">6</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#D7261E"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Person</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Y(1)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Y(0)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">TE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">John</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">245.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jim</td>
+<td style="text-align: right;">100.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jake</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">270.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cody</td>
+<td style="text-align: right;">155.0</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Luke</td>
+<td style="text-align: right;">NA</td>
+<td style="text-align: right;">230.0</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">127.5</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">248.3</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">-120.8</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Person</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"John"</span>,<span class="st">"Jim"</span>,<span class="st">"Jake"</span>,<span class="st">"Cody"</span>,<span class="st">"Luke"</span><span class="op">)</span></span>
+<span><span class="va">A</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span></span>
+<span><span class="va">Y</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">245</span>, <span class="fl">100</span>, <span class="fl">270</span>, <span class="fl">155</span>, <span class="fl">230</span><span class="op">)</span></span>
+<span><span class="va">RealOutcomes</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">Person</span>, <span class="va">A</span>, <span class="va">Y</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">RealOutcomes</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>             col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Person"</span>, <span class="st">"A"</span>, <span class="st">"Y"</span><span class="op">)</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small">
+<thead><tr class="header">
+<th style="text-align: left;">Person</th>
+<th style="text-align: right;">A</th>
+<th style="text-align: right;">Y</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">John</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">245</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jim</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">100</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jake</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">270</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cody</td>
+<td style="text-align: right;">1</td>
+<td style="text-align: right;">155</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Luke</td>
+<td style="text-align: right;">0</td>
+<td style="text-align: right;">230</td>
+</tr>
+</tbody>
+</table>
+</div>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/coef.html">coef</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">Y</span><span class="op">~</span><span class="va">A</span><span class="op">)</span><span class="op">)</span>,<span class="fl">1</span><span class="op">)</span></span>
+<span><span class="co">#&gt; (Intercept)           A </span></span>
+<span><span class="co">#&gt;       248.3      -120.8</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p><code>-120.8</code> 从上面的潜在结果数据表中获得的ATE 不同。部分原因是由于有限样本偏差（只有 5 个数据点）而不是无限总体。如果我们有一个足够大的样本，我们预计估计值将接近真实的ATE <code>-58</code></p>
 <p>Average Treatment Effect Among the Treated (ATT)</p>
 <p><span class="math display">\[
 \widehat {ATT} =E(Y^1-Y^0|X=1)=E(Y^1|X=1)-E(Y^0|X=1)
 \]</span></p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Person</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"John"</span>,<span class="st">"Jim"</span>,<span class="st">"Jake"</span>,<span class="st">"Cody"</span>,<span class="st">"Luke"</span><span class="op">)</span></span>
+<span><span class="va">Y1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">195</span>, <span class="fl">100</span>, <span class="fl">210</span>, <span class="fl">155</span>, <span class="fl">165</span><span class="op">)</span></span>
+<span><span class="va">Y0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">Y1</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Treated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">Person</span>, <span class="va">Y1</span>, <span class="va">Y0</span>, TE <span class="op">=</span> <span class="va">Y1</span><span class="op">-</span><span class="va">Y0</span><span class="op">)</span></span>
+<span><span class="va">Treated</span><span class="op">[</span><span class="fl">6</span>,<span class="fl">2</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">Treated</span><span class="op">$</span><span class="va">Y1</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">Treated</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>             col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Person"</span>, <span class="st">"Y(1)"</span>, <span class="st">"Y(0)"</span>, <span class="st">"TE"</span><span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html">row_spec</a></span><span class="op">(</span><span class="fl">6</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#D7261E"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Person</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Y(1)</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Y(0)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">TE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">John</td>
+<td style="text-align: right;">195</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Jim</td>
+<td style="text-align: right;">100</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Jake</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Cody</td>
+<td style="text-align: right;">155</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Luke</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">165</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
 <p>Average Treatment Effect Among the Control (ATC)</p>
 <p><span class="math display">\[
 \widehat {ATC} =E(Y^1-Y^0|X=0)=E(Y^1|X=0)-E(Y^0|X=0)
 \]</span></p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Person</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="st">"Jack"</span>, <span class="st">"Dustin"</span>, <span class="st">"Cole"</span>, <span class="st">"Lucas"</span>, <span class="st">"Dylan"</span><span class="op">)</span></span>
+<span><span class="va">Y0</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">245</span>, <span class="fl">160</span>, <span class="fl">270</span>, <span class="fl">210</span>, <span class="fl">165</span><span class="op">)</span></span>
+<span><span class="va">Y1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="cn">NA</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html">length</a></span><span class="op">(</span><span class="va">Y0</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Untreated</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span><span class="va">Person</span>, <span class="va">Y1</span>, <span class="va">Y0</span>, TE <span class="op">=</span> <span class="va">Y1</span><span class="op">-</span><span class="va">Y0</span><span class="op">)</span></span>
+<span><span class="va">Untreated</span><span class="op">[</span><span class="fl">6</span>,<span class="fl">3</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html">mean</a></span><span class="op">(</span><span class="va">Untreated</span><span class="op">$</span><span class="va">Y0</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/knitr/man/kable.html">kable</a></span><span class="op">(</span><span class="va">Untreated</span>, booktabs <span class="op">=</span> <span class="cn">TRUE</span>, </span>
+<span>             col.names <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Person"</span>, <span class="st">"Y(1)"</span>, <span class="st">"Y(0)"</span>, <span class="st">"TE"</span><span class="op">)</span><span class="op">)</span><span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/kableExtra/man/row_spec.html">row_spec</a></span><span class="op">(</span><span class="fl">6</span>, bold <span class="op">=</span> <span class="cn">T</span>, color <span class="op">=</span> <span class="st">"white"</span>, background <span class="op">=</span> <span class="st">"#D7261E"</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<table class="caption-top table table-sm table-striped small" data-quarto-postprocess="true">
+<thead><tr class="header">
+<th style="text-align: left;" data-quarto-table-cell-role="th">Person</th>
+<th style="text-align: left;" data-quarto-table-cell-role="th">Y(1)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">Y(0)</th>
+<th style="text-align: right;" data-quarto-table-cell-role="th">TE</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: left;">Jack</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">245</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Dustin</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">160</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Cole</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">270</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left;">Lucas</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">210</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="odd">
+<td style="text-align: left;">Dylan</td>
+<td style="text-align: left;">NA</td>
+<td style="text-align: right;">165</td>
+<td style="text-align: right;">NA</td>
+</tr>
+<tr class="even">
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+<td style="text-align: left; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">210</td>
+<td style="text-align: right; font-weight: bold; color: white !important; background-color: rgba(215, 38, 30, 255) !important;">NA</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="callout callout-style-default callout-note callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Note
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<ul>
+<li><p>在随机对照试验中（足够n），ATT和ATE是等效的。</p></li>
+<li><p>在观察性研究中，ATT 和 ATE 不一定相同。</p></li>
+</ul>
+</div>
+</div>
 <p><strong>Average Treatment Effect Among the Evenly Matched (ATM)</strong> 专为倾向得分加权开发的相对较新的估计值，但与进行一对一匹配时的估计值密切相关。</p>
 <p><span class="math display">\[
 ATM_d=E(Y_1-Y_0|M_d=1)
 \]</span></p>
+</section><section id="identifiability-assumptions" class="level3"><h3 class="anchored" data-anchor-id="identifiability-assumptions">Identifiability Assumptions</h3>
+<table class="caption-top table">
+<colgroup>
+<col style="width: 18%">
+<col style="width: 15%">
+<col style="width: 66%">
+</colgroup>
+<tbody>
+<tr class="odd">
+<td>Exchangeability</td>
+<td>Y(1),Y(0)⊥A</td>
+<td>Treatment assignment is independent of the potential outcome</td>
+</tr>
+<tr class="even">
+<td>Positivity</td>
+<td>0&lt;P(A=1)&lt;1</td>
+<td>Subjects are eligible to receive both treatment</td>
+</tr>
+<tr class="odd">
+<td>Consistency</td>
+<td>Y=Y(a)∀A=a</td>
+<td>No multiple version of the treatment</td>
+</tr>
+<tr class="even">
+<td>No interference</td>
+<td></td>
+<td>Treated one patient will not impact outcome for others</td>
+</tr>
+</tbody>
+</table></section></section><section id="预处理" class="level2"><h2 class="anchored" data-anchor-id="预处理">预处理</h2>
+<p>用于倾向性评分的数据要进行一些预处理，比如因子化 和 <strong>缺失值处理</strong> 如算法插补（KNN、随机森林等），</p>
+</section><section id="流程" class="level2"><h2 class="anchored" data-anchor-id="流程">流程</h2>
+<section id="估计倾向得分暴露模型" class="level3"><h3 class="anchored" data-anchor-id="估计倾向得分暴露模型">估计倾向得分：暴露模型</h3>
+<p>倾向得分是给定一组观察到的 covaraites 接受治疗、干预或暴露的条件概率 。</p>
+<p><span class="math display">\[
+  PS=f(L) = Prob(A=1|L)
+\]</span></p>
+<p>PS 值的估计是<strong>以处理因素作为因变量，其他混杂因素作为自变量</strong>，通过建立一个模型来估计每个研究对象接受处理因素的可能性。目前用于估计 PS 值的方法有logistic 回归，分类树，Probit 回归、Bootstrapping、随机森林、梯度提升模型 （GBM） 等。其中 logistic 回归是目前最常用的方法。</p>
+<ol type="1">
+<li><p>模型选择：交互项（如果有证据表明年龄和性别在决定瑞舒伐他汀处方的可能性方面存在相互作用，我们应该在倾向评分模型中包括交互项 （年龄×性别） 以及主要效应。），多项式项，机器学习</p></li>
+<li>
+<p>变量选择：咨询相关领域专家，Build directed acyclic graph (DAG) from literature review</p>
+<ul>
+<li><p>Select variables causing outcome</p></li>
+<li><p>select variables causing both outcome and exposure</p></li>
+<li><p>omit variables only causing exposure</p></li>
+<li><p>omit variables in the causal pathway</p></li>
+<li><p>omit variables that are effect of outcome</p></li>
+<li><p>omit variables that are simply noise</p></li>
+</ul>
+<p>共线性</p>
+</li>
+</ol>
+<table class="caption-top table">
+<thead><tr class="header">
+<th><strong>Method</strong></th>
+<th>
+<p><strong>Exposure model</strong></p>
+<p>(A∼…)</p>
+</th>
+<th>
+<p><strong>Outcome Model</strong></p>
+<p>(Y∼…)</p>
+</th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td>Regression (Gauss 1821 ††)</td>
+<td></td>
+<td>Yes (Y∼A+L)</td>
+</tr>
+<tr class="even">
+<td>Propensity score matching (<a href="https://ehsanx.github.io/psw/balance.html#ref-rosenbaum1983central">Rosenbaum and Rubin 1983</a>)</td>
+<td>Yes (A∼L)</td>
+<td>Crude comparison on matched data (Y∼A)</td>
+</tr>
+<tr class="odd">
+<td>Propensity score Weighting (<a href="https://ehsanx.github.io/psw/balance.html#ref-rosenbaum1983central">Rosenbaum and Rubin 1983</a>)</td>
+<td>Yes (A∼L)</td>
+<td>Crude comparison on weighted data (Y∼A)</td>
+</tr>
+<tr class="even">
+<td>Propensity score double adjustment</td>
+<td>Yes (A∼L)</td>
+<td>Yes (Y∼A+L)</td>
+</tr>
+<tr class="odd">
+<td>Decision tree-based method (<a href="https://ehsanx.github.io/psw/balance.html#ref-breiman1984classification">Breiman et al.&nbsp;1984</a>)</td>
+<td></td>
+<td>Yes (Y∼A+L)</td>
+</tr>
+<tr class="even">
+<td>Random Forest (<a href="https://ehsanx.github.io/psw/balance.html#ref-ho1995random">Ho 1995</a>)</td>
+<td></td>
+<td>Yes (Y∼A+L)</td>
+</tr>
+</tbody>
+</table></section><section id="平衡倾向得分方法" class="level3"><h3 class="anchored" data-anchor-id="平衡倾向得分方法">平衡倾向得分方法</h3>
+<p>倾向性评分只是一个分数（条件概率），自己并没有均衡协变量（混杂因素）的能力，利用 PS 值均衡组间协变量分布的方法有<strong>匹配（matching）</strong>、<strong>分层（stratification）</strong>、<strong>协变量调整（covariate adjustment, PS用作协变量）</strong>和<strong>加权（weighting）</strong>等。</p>
+<p>平衡诊断 balance diagnosis：对于处理单元和对照单元成对的匹配方法，可以使用相关样本检验（例如，连续变量的 t 检验和分类变量的卡方检验），但是犯 I 类和 II 类错误的可能性非常高。</p>
+<p>Statistical tests are affected by sample size</p>
+<ul>
+<li>t-test</li>
+<li>McNemar tests</li>
+<li>Wilcoxon rank test</li>
+</ul>
+<p><strong>统计检验在总体水平上推断平衡，但我们真正感兴趣的是样本水平的平衡</strong></p>
+<p><code>PSAgraphics</code>标准化的效应大小和图形表示，建议effect sizes小于 0.1。 连续变量的平衡诊断箱线图，分类变量的条形图</p>
+<section id="standardized-mean-differences-smd" class="level4"><h4 class="anchored" data-anchor-id="standardized-mean-differences-smd">standardized mean differences (SMD)</h4>
+<p><span class="math display">\[
+SMD_{continuous} = \frac{\bar{L}_{A=1} - \bar{L}_{A=0}}{\sqrt{\frac{(n_1 - 1) \cdot s^2_{A=1} + (n_0 - 1) \cdot s^2_{A=0}}{n_1 + n_0 - 2}}}
+\]</span></p>
+<p><img src="images/clipboard-2061577217.png" class="img-fluid"></p>
+<p><span class="math display">\[
+SMD_{binary} = \frac{\hat{p}_{A=1} - \hat{p}_{A=0}}{\sqrt{\frac{\hat{p}_{A=1} \times (1 - \hat{p}_{A=1}) + \hat{p}_{A=0} \times (1 - \hat{p}_{A=0})}{2}}}
+\\
+其中\hat p 是两个二分类组的比例。
+\]</span></p>
+<p>一般认为<strong>SMD&lt;0.1</strong>即可</p>
+</section><section id="variance-ratiovr" class="level4"><h4 class="anchored" data-anchor-id="variance-ratiovr">Variance ratio（VR）</h4>
+<p>cut-points： <strong>0.5~2</strong></p>
+</section><section id="overlapping-histograms" class="level4"><h4 class="anchored" data-anchor-id="overlapping-histograms">overlapping histograms</h4>
+<ul>
+<li>
+<p>如果存在基线协变量空间，其中有暴露的患者，但没有对照，则会出现“缺乏完全重叠”，反之亦然。</p>
+<ul>
+<li><p>“无重叠”区域是数据的固有限制。</p></li>
+<li><p><strong>回归调整</strong>通常不会为此提供任何解决方案。因此，推理不能推广到重叠区域之外</p></li>
+</ul>
+</li>
+</ul>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure"><p><img src="images/clipboard-3251520148.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:69.0%"></p>
+</figure>
+</div>
+<p>love plot</p>
+<p>balance tables</p>
+</section></section><section id="估计因果效应结局建模" class="level3"><h3 class="anchored" data-anchor-id="估计因果效应结局建模">估计因果效应：结局建模</h3>
+<p>outcome modelling</p>
+<p><span class="math display">\[
+Prob(T=1|A=1)
+\]</span></p>
 <p>进行 PSA 之前，将倾向得分（PS）与结果（outcome）根据治疗、干预或暴露（group）作图通常很有帮助。 Loess 回归线散点图</p>
 <p>分五层的倾向得分评估图，相关样本评估图</p>
-</li>
-<li>
-<p><strong>敏感性分析：</strong> 检查未观察到的混杂因素confounding factor 的敏感性</p>
+<p>Variance estimation: Cluster options, Bootstrap options</p>
+</section><section id="敏感性分析报告" class="level3"><h3 class="anchored" data-anchor-id="敏感性分析报告"><strong>敏感性分析报告</strong></h3>
+<p>在研究问题和基本假设的背景下报告结果并解释治疗效果估计。</p>
+<p>局限性和潜在偏倚，并报告有用的敏感性分析的结果</p>
+<p>检查未观察到的混杂因素confounding factor 的敏感性：Rosenbaum bounds， Quantitative bias analysis,E-value，</p>
 <p>评估因果估计的稳健性</p>
 <ol type="1">
 <li><p>敏感度分析：仅针对匹配方法进行了明确定义</p></li>
 <li><p>自举法：<code>PSAboot</code></p></li>
 </ol>
-</li>
-</ol>
 <div class="quarto-figure quarto-figure-center">
 <figure class="figure"><p><img src="images/PSA_Flow.png" class="img-fluid quarto-figure quarto-figure-center figure-img"></p>
 </figure>
+</div>
+</section></section><section id="prerequisites" class="level2"><h2 class="anchored" data-anchor-id="prerequisites">Prerequisites</h2>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw">if</span><span class="op">(</span><span class="op">!</span><span class="kw"><a href="https://rdrr.io/r/base/library.html">require</a></span><span class="op">(</span><span class="va"><a href="http://github.com/jbryer/psa">psa</a></span><span class="op">)</span><span class="op">)</span> <span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">'jbryer/psa'</span>, dependencies <span class="op">=</span> <span class="st">'Enhances'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
 </div>
 
 

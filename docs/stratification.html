@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="generator" content="quarto-1.4.555">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>PropensityScore - 2&nbsp; 分层（Stratification）</title>
+<title>Propensity Score - 3&nbsp; 分层（Stratification）</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -60,8 +60,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./matching.html" rel="next">
-<link href="./PSM.html" rel="prev">
+<link href="./weighting.html" rel="next">
+<link href="./matching.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
@@ -105,7 +105,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./PropensityScore.html">倾向性评分</a></li><li class="breadcrumb-item"><a href="./stratification.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./PropensityScore.html">倾向性评分</a></li><li class="breadcrumb-item"><a href="./stratification.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></a></li></ol></nav>
         <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -116,7 +116,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
   <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
-      <a href="./">PropensityScore</a> 
+      <a href="./">Propensity Score</a> 
     </div>
       </div>
         <div class="mt-2 flex-shrink-0 align-items-center">
@@ -149,20 +149,26 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./stratification.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></span></a>
+  <a href="./matching.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./matching.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span></a>
+  <a href="./stratification.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="./weighting.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">加权</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./SensitivityAnalysis.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">敏感性分析</span></span></a>
   </div>
 </li>
       </ul>
@@ -175,32 +181,34 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <nav id="TOC" role="doc-toc" class="toc-active" data-toc-expanded="99"><h2 id="toc-title">Table of contents</h2>
    
   <ul>
-<li>
-<a href="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92" id="toc-估计倾向得分逻辑回归" class="nav-link active" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92"><span class="header-section-number">2.1</span> 估计倾向得分（逻辑回归）</a>
-  <ul>
-<li><a href="#%E5%88%86%E5%B1%82" id="toc-分层" class="nav-link" data-scroll-target="#%E5%88%86%E5%B1%82"><span class="header-section-number">2.1.1</span> 分层</a></li>
+<li><a href="#%E6%8E%A2%E7%B4%A2%E6%80%A7%E5%88%86%E6%9E%90" id="toc-探索性分析" class="nav-link active" data-scroll-target="#%E6%8E%A2%E7%B4%A2%E6%80%A7%E5%88%86%E6%9E%90"><span class="header-section-number">3.1</span> 探索性分析</a></li>
+  <li><a href="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92" id="toc-估计倾向得分逻辑回归" class="nav-link" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E9%80%BB%E8%BE%91%E5%9B%9E%E5%BD%92"><span class="header-section-number">3.2</span> 估计倾向得分（逻辑回归）</a></li>
+  <li><a href="#%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E5%88%86%E5%B1%82" id="toc-倾向得分分层" class="nav-link" data-scroll-target="#%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E5%88%86%E5%B1%82"><span class="header-section-number">3.3</span> 倾向得分分层</a></li>
   <li>
-<a href="#%E6%9F%A5%E7%9C%8B%E5%B9%B3%E8%A1%A1%E6%B7%B7%E6%9D%82%E6%95%88%E5%BA%94" id="toc-查看平衡混杂效应" class="nav-link" data-scroll-target="#%E6%9F%A5%E7%9C%8B%E5%B9%B3%E8%A1%A1%E6%B7%B7%E6%9D%82%E6%95%88%E5%BA%94"><span class="header-section-number">2.1.2</span> 查看平衡混杂效应</a>
-  <ul class="collapse">
-<li><a href="#%E6%95%B0%E5%80%BC%E5%8F%98%E9%87%8F%E7%9A%84%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE" id="toc-数值变量的协变量平衡图" class="nav-link" data-scroll-target="#%E6%95%B0%E5%80%BC%E5%8F%98%E9%87%8F%E7%9A%84%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE"><span class="header-section-number">2.1.2.1</span> 数值变量的协变量平衡图</a></li>
-  <li><a href="#%E5%88%86%E7%B1%BB%E5%8F%98%E9%87%8F%E7%9A%84%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE" id="toc-分类变量的协变量平衡图" class="nav-link" data-scroll-target="#%E5%88%86%E7%B1%BB%E5%8F%98%E9%87%8F%E7%9A%84%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE"><span class="header-section-number">2.1.2.2</span> 分类变量的协变量平衡图</a></li>
-  </ul>
-</li>
-  </ul>
-</li>
-  <li><a href="#%E4%BC%B0%E8%AE%A1%E5%9B%A0%E6%9E%9C%E6%95%88%E5%BA%94" id="toc-估计因果效应" class="nav-link" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%9B%A0%E6%9E%9C%E6%95%88%E5%BA%94"><span class="header-section-number">2.2</span> 估计因果效应</a></li>
-  <li>
-<a href="#%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90" id="toc-敏感性分析" class="nav-link" data-scroll-target="#%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90"><span class="header-section-number">2.3</span> 敏感性分析</a>
+<a href="#%E5%B9%B3%E8%A1%A1%E8%AF%8A%E6%96%AD" id="toc-平衡诊断" class="nav-link" data-scroll-target="#%E5%B9%B3%E8%A1%A1%E8%AF%8A%E6%96%AD"><span class="header-section-number">3.4</span> 平衡诊断</a>
   <ul>
-<li><a href="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E5%88%86%E7%B1%BB%E6%A0%91" id="toc-估计倾向得分分类树" class="nav-link" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%80%BE%E5%90%91%E5%BE%97%E5%88%86%E5%88%86%E7%B1%BB%E6%A0%91"><span class="header-section-number">2.3.1</span> 估计倾向得分（分类树）</a></li>
+<li><a href="#%E6%95%88%E5%BA%94%E5%A4%A7%E5%B0%8F" id="toc-效应大小" class="nav-link" data-scroll-target="#%E6%95%88%E5%BA%94%E5%A4%A7%E5%B0%8F"><span class="header-section-number">3.4.1</span> 效应大小</a></li>
+  <li><a href="#%E6%95%B0%E5%80%BC%E5%9E%8B%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE" id="toc-数值型协变量平衡图" class="nav-link" data-scroll-target="#%E6%95%B0%E5%80%BC%E5%9E%8B%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE"><span class="header-section-number">3.4.2</span> 数值型协变量平衡图</a></li>
+  <li><a href="#%E5%88%86%E7%B1%BB%E5%9E%8B%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE" id="toc-分类型协变量平衡图" class="nav-link" data-scroll-target="#%E5%88%86%E7%B1%BB%E5%9E%8B%E5%8D%8F%E5%8F%98%E9%87%8F%E5%B9%B3%E8%A1%A1%E5%9B%BE"><span class="header-section-number">3.4.3</span> 分类型协变量平衡图</a></li>
   </ul>
 </li>
+  <li>
+<a href="#%E4%BC%B0%E8%AE%A1%E5%9B%A0%E6%9E%9C%E6%95%88%E5%BA%94" id="toc-估计因果效应" class="nav-link" data-scroll-target="#%E4%BC%B0%E8%AE%A1%E5%9B%A0%E6%9E%9C%E6%95%88%E5%BA%94"><span class="header-section-number">3.5</span> 估计因果效应</a>
+  <ul>
+<li><a href="#%E5%88%86%E5%B1%82" id="toc-分层" class="nav-link" data-scroll-target="#%E5%88%86%E5%B1%82"><span class="header-section-number">3.5.1</span> 分层</a></li>
+  <li><a href="#%E5%B9%B3%E5%9D%87%E6%B2%BB%E7%96%97%E6%95%88%E5%BA%94ate" id="toc-平均治疗效应ate" class="nav-link" data-scroll-target="#%E5%B9%B3%E5%9D%87%E6%B2%BB%E7%96%97%E6%95%88%E5%BA%94ate"><span class="header-section-number">3.5.2</span> 平均治疗效应ATE</a></li>
+  <li><a href="#%E6%8E%A5%E5%8F%97%E6%B2%BB%E7%96%97%E8%80%85%E7%9A%84%E5%B9%B3%E5%9D%87%E6%B2%BB%E7%96%97%E6%95%88%E6%9E%9C-att" id="toc-接受治疗者的平均治疗效果-att" class="nav-link" data-scroll-target="#%E6%8E%A5%E5%8F%97%E6%B2%BB%E7%96%97%E8%80%85%E7%9A%84%E5%B9%B3%E5%9D%87%E6%B2%BB%E7%96%97%E6%95%88%E6%9E%9C-att"><span class="header-section-number">3.5.3</span> <strong>接受治疗者的平均治疗效果 （ATT）</strong></a></li>
+  <li><a href="#%E5%AF%B9%E7%85%A7%E7%BB%84%E7%9A%84%E5%B9%B3%E5%9D%87%E6%B2%BB%E7%96%97%E6%95%88%E6%9E%9C-atc" id="toc-对照组的平均治疗效果-atc" class="nav-link" data-scroll-target="#%E5%AF%B9%E7%85%A7%E7%BB%84%E7%9A%84%E5%B9%B3%E5%9D%87%E6%B2%BB%E7%96%97%E6%95%88%E6%9E%9C-atc"><span class="header-section-number">3.5.4</span> <strong>对照组的平均治疗效果 （ATC）</strong></a></li>
+  <li><a href="#average-treatment-effect-among-the-evenly-matched-atm" id="toc-average-treatment-effect-among-the-evenly-matched-atm" class="nav-link" data-scroll-target="#average-treatment-effect-among-the-evenly-matched-atm"><span class="header-section-number">3.5.5</span> <strong>Average Treatment Effect Among the Evenly Matched (ATM)</strong></a></li>
+  </ul>
+</li>
+  <li><a href="#%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90" id="toc-敏感性分析" class="nav-link" data-scroll-target="#%E6%95%8F%E6%84%9F%E6%80%A7%E5%88%86%E6%9E%90"><span class="header-section-number">3.6</span> 敏感性分析</a></li>
   </ul></nav>
     </div>
 <!-- main -->
-<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./PropensityScore.html">倾向性评分</a></li><li class="breadcrumb-item"><a href="./stratification.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></a></li></ol></nav><div class="quarto-title">
+<main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./PropensityScore.html">倾向性评分</a></li><li class="breadcrumb-item"><a href="./stratification.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">分层（Stratification）</span></a></li></ol></nav><div class="quarto-title">
 <h1 class="title">
-<span class="chapter-number">2</span>&nbsp; <span class="chapter-title">分层（Stratification）</span>
+<span class="chapter-number">3</span>&nbsp; <span class="chapter-title">分层（Stratification）</span>
 </h1>
 </div>
 
@@ -215,40 +223,32 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   
 
 
-</header><section id="估计倾向得分逻辑回归" class="level2" data-number="2.1"><h2 data-number="2.1" class="anchored" data-anchor-id="估计倾向得分逻辑回归">
-<span class="header-section-number">2.1</span> 估计倾向得分（逻辑回归）</h2>
+</header><section id="探索性分析" class="level2" data-number="3.1"><h2 data-number="3.1" class="anchored" data-anchor-id="探索性分析">
+<span class="header-section-number">3.1</span> 探索性分析</h2>
 <div class="cell">
 <details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/data.html">data</a></span><span class="op">(</span><span class="va">lalonde</span>, package<span class="op">=</span><span class="st">'Matching'</span><span class="op">)</span></span>
-<span><span class="fu">glimpse</span><span class="op">(</span><span class="va">lalonde</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Rows: 445</span></span>
-<span><span class="co">#&gt; Columns: 12</span></span>
-<span><span class="co">#&gt; $ age     &lt;int&gt; 37, 22, 30, 27, 33, 22, 23, 32, 22, 33, 19, 21, 18, 27, 17, 19…</span></span>
-<span><span class="co">#&gt; $ educ    &lt;int&gt; 11, 9, 12, 11, 8, 9, 12, 11, 16, 12, 9, 13, 8, 10, 7, 10, 13, …</span></span>
-<span><span class="co">#&gt; $ black   &lt;int&gt; 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ hisp    &lt;int&gt; 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ married &lt;int&gt; 1, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ nodegr  &lt;int&gt; 1, 1, 0, 1, 1, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 0, 1,…</span></span>
-<span><span class="co">#&gt; $ re74    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ re75    &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…</span></span>
-<span><span class="co">#&gt; $ re78    &lt;dbl&gt; 9930.05, 3595.89, 24909.50, 7506.15, 289.79, 4056.49, 0.00, 84…</span></span>
-<span><span class="co">#&gt; $ u74     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ u75     &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span><span class="co">#&gt; $ treat   &lt;int&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,…</span></span>
-<span></span>
-<span><span class="va">lalonde_formu</span> <span class="op">&lt;-</span> <span class="va">treat</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">educ</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">educ</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">black</span> <span class="op">+</span></span>
-<span>    <span class="va">hisp</span> <span class="op">+</span> <span class="va">married</span> <span class="op">+</span> <span class="va">nodegr</span> <span class="op">+</span> <span class="va">re74</span>  <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re74</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">re75</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re75</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
-<span><span class="va">lr_out</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">lalonde_formu</span>,</span>
-<span>              data <span class="op">=</span> <span class="va">lalonde</span>,</span>
-<span>              family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">'logit'</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">lalonde</span> <span class="op">&lt;-</span> <span class="va">lalonde</span> <span class="op">%&gt;%</span> <span class="fu">mutate</span><span class="op">(</span><span class="fu">across</span><span class="op">(</span><span class="va">treat</span>, <span class="va">as.factor</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">)</span></span>
+<span><span class="co">#&gt; 'data.frame':    445 obs. of  12 variables:</span></span>
+<span><span class="co">#&gt;  $ age    : int  37 22 30 27 33 22 23 32 22 33 ...</span></span>
+<span><span class="co">#&gt;  $ educ   : int  11 9 12 11 8 9 12 11 16 12 ...</span></span>
+<span><span class="co">#&gt;  $ black  : int  1 0 1 1 1 1 1 1 1 0 ...</span></span>
+<span><span class="co">#&gt;  $ hisp   : int  0 1 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ married: int  1 0 0 0 0 0 0 0 0 1 ...</span></span>
+<span><span class="co">#&gt;  $ nodegr : int  1 1 0 1 1 1 0 1 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ re74   : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ re75   : num  0 0 0 0 0 0 0 0 0 0 ...</span></span>
+<span><span class="co">#&gt;  $ re78   : num  9930 3596 24910 7506 290 ...</span></span>
+<span><span class="co">#&gt;  $ u74    : int  1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">#&gt;  $ u75    : int  1 1 1 1 1 1 1 1 1 1 ...</span></span>
+<span><span class="co">#&gt;  $ treat  : Factor w/ 2 levels "0","1": 2 2 2 2 2 2 2 2 2 2 ...</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details>
 </div>
-<p>倾向性得分就是模型的拟合值，检查倾向得分的分布，以确保我们有良好的重叠</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">lr_out</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">lr_ps</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html">as.logical</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_density</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">age</span>, y <span class="op">=</span> <span class="va">educ</span>, shape <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">married</span><span class="op">)</span>, color <span class="op">=</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">geom_point</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>`0`<span class="op">=</span><span class="st">"pink"</span>,`1`<span class="op">=</span><span class="st">"skyblue"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">'bottom'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
 <figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-2-1.png" class="img-fluid figure-img" width="672"></p>
@@ -256,11 +256,73 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<section id="分层" class="level3" data-number="2.1.1"><h3 data-number="2.1.1" class="anchored" data-anchor-id="分层">
-<span class="header-section-number">2.1.1</span> 分层</h3>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/ggpairs.html">ggpairs</a></span><span class="op">(</span></span>
+<span>    <span class="va">lalonde</span> <span class="op">%&gt;%</span> <span class="fu">select</span><span class="op">(</span><span class="va">age</span>,<span class="va">educ</span>, <span class="va">re78</span>, <span class="va">treat</span><span class="op">)</span>,</span>
+<span>    columns <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span><span class="op">)</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu">ggplot2</span><span class="fu">::</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>color <span class="op">=</span> <span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>    upper <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>continuous <span class="op">=</span> <span class="st">'cor'</span><span class="op">)</span>,</span>
+<span>    lower <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>continuous <span class="op">=</span> <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/wrap.html">wrap</a></span><span class="op">(</span><span class="st">"points"</span>, alpha <span class="op">=</span> <span class="fl">0.3</span><span class="op">)</span>, </span>
+<span>                 combo <span class="op">=</span> <span class="fu">GGally</span><span class="fu">::</span><span class="fu"><a href="https://ggobi.github.io/ggally/reference/wrap.html">wrap</a></span><span class="op">(</span><span class="st">"dot_no_facet"</span>, alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    diag <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>continuous <span class="op">=</span> <span class="st">"densityDiag"</span>, discrete <span class="op">=</span> <span class="st">"barDiag"</span>, na <span class="op">=</span> <span class="st">"naDiag"</span>, alpha <span class="op">=</span> <span class="fl">0.4</span><span class="op">)</span>,</span>
+<span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-3-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="估计倾向得分逻辑回归" class="level2" data-number="3.2"><h2 data-number="3.2" class="anchored" data-anchor-id="估计倾向得分逻辑回归">
+<span class="header-section-number">3.2</span> 估计倾向得分（逻辑回归）</h2>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lalonde_formula</span> <span class="op">&lt;-</span> <span class="va">treat</span> <span class="op">~</span> <span class="va">age</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">age</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">educ</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">educ</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">black</span> <span class="op">+</span></span>
+<span>    <span class="va">hisp</span> <span class="op">+</span> <span class="va">married</span> <span class="op">+</span> <span class="va">nodegr</span> <span class="op">+</span> <span class="va">re74</span>  <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re74</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span> <span class="op">+</span> <span class="va">re75</span> <span class="op">+</span> <span class="fu"><a href="https://rdrr.io/r/base/AsIs.html">I</a></span><span class="op">(</span><span class="va">re75</span><span class="op">^</span><span class="fl">2</span><span class="op">)</span></span>
+<span></span>
+<span><span class="va">logit_fit</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/glm.html">glm</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="va">lalonde_formula</span>,</span>
+<span>              data <span class="op">=</span> <span class="va">lalonde</span>,</span>
+<span>              family <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/stats/family.html">binomial</a></span><span class="op">(</span>link <span class="op">=</span> <span class="st">'logit'</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>倾向性得分就是模型的拟合值，</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/fitted.values.html">fitted</a></span><span class="op">(</span><span class="va">logit_fit</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details>
+</div>
+<p>检查倾向得分的分布，以确保我们有良好的重叠</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">lalonde</span>, <span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   binwidth <span class="op">=</span> <span class="fl">0.05</span>, fill <span class="op">=</span> <span class="st">"skyblue"</span>, color <span class="op">=</span> <span class="st">"black"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">lalonde</span>, <span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span><span class="op">)</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="op">-</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   binwidth <span class="op">=</span> <span class="fl">0.05</span>, fill <span class="op">=</span> <span class="st">"pink"</span>, color <span class="op">=</span> <span class="st">"black"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">labs</span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Count"</span>, x <span class="op">=</span> <span class="st">"PS"</span><span class="op">)</span> </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, color <span class="op">=</span> <span class="va">treat</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">geom_density</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>`0`<span class="op">=</span><span class="st">"pink"</span>,`1`<span class="op">=</span><span class="st">"skyblue"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="倾向得分分层" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="倾向得分分层">
+<span class="header-section-number">3.3</span> 倾向得分分层</h2>
 <p>根据倾向分数使用五分位数进行分层</p>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">breaks5</span> <span class="op">&lt;-</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/get_strata_breaks.html">get_strata_breaks</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span><span class="op">)</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">breaks5</span> <span class="op">&lt;-</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/get_strata_breaks.html">get_strata_breaks</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">ps</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/str.html">str</a></span><span class="op">(</span><span class="va">breaks5</span><span class="op">)</span></span>
 <span><span class="co">#&gt; List of 2</span></span>
 <span><span class="co">#&gt;  $ breaks: Named num [1:6] 0.0849 0.3403 0.3594 0.408 0.5112 ...</span></span>
@@ -271,7 +333,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span><span class="co">#&gt;   ..$ xmax  : num [1:5] 0.34 0.359 0.408 0.511 0.83</span></span>
 <span><span class="co">#&gt;   ..$ xmid  : num [1:5] 0.213 0.35 0.384 0.46 0.671</span></span>
 <span></span>
-<span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>, </span>
+<span><span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html">cut</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">ps</span>, </span>
 <span>                          breaks <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">breaks</span>, </span>
 <span>                          include.lowest <span class="op">=</span> <span class="cn">TRUE</span>, </span>
 <span>                          labels <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">labels</span><span class="op">$</span><span class="va">strata</span><span class="op">)</span></span>
@@ -283,54 +345,59 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </details>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">lr_ps</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html">as.logical</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>    <span class="fu">geom_density</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html">as.logical</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, color <span class="op">=</span> <span class="va">treat</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">geom_density</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="va">treat</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">breaks</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_text</span><span class="op">(</span>data <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">labels</span>, </span>
 <span>              <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">xmid</span>, y <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="va">strata</span><span class="op">)</span>,</span>
 <span>              color <span class="op">=</span> <span class="st">'black'</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ylab</span><span class="op">(</span><span class="st">'Density'</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlim</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>    <span class="fu">xlim</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu">scale_fill_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>`0`<span class="op">=</span><span class="st">"pink"</span>,`1`<span class="op">=</span><span class="st">"skyblue"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-4-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">breaks</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">lr_ps</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/logical.html">as.logical</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_point</span><span class="op">(</span>data <span class="op">=</span> <span class="va">lalonde</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>, color <span class="op">=</span> <span class="va">treat</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
 <span>    <span class="fu">geom_text</span><span class="op">(</span>data <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">labels</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">xmid</span>, y <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="va">strata</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">'black'</span>, vjust <span class="op">=</span> <span class="fl">1</span><span class="op">)</span> <span class="op">+</span></span>
-<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span><span class="op">+</span></span>
+<span>    <span class="fu">scale_color_manual</span><span class="op">(</span>values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span>`0`<span class="op">=</span><span class="st">"pink2"</span>,`1`<span class="op">=</span><span class="st">"skyblue2"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-</section><section id="查看平衡混杂效应" class="level3" data-number="2.1.2"><h3 data-number="2.1.2" class="anchored" data-anchor-id="查看平衡混杂效应">
-<span class="header-section-number">2.1.2</span> 查看平衡混杂效应</h3>
+</section><section id="平衡诊断" class="level2" data-number="3.4"><h2 data-number="3.4" class="anchored" data-anchor-id="平衡诊断">
+<span class="header-section-number">3.4</span> 平衡诊断</h2>
+<section id="效应大小" class="level3" data-number="3.4.1"><h3 data-number="3.4.1" class="anchored" data-anchor-id="效应大小">
+<span class="header-section-number">3.4.1</span> 效应大小</h3>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde_formu</span><span class="op">)</span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">covars</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/allnames.html">all.vars</a></span><span class="op">(</span><span class="va">lalonde_formula</span><span class="op">)</span></span>
 <span><span class="va">covars</span> <span class="op">&lt;-</span> <span class="va">lalonde</span><span class="op">[</span>,<span class="va">covars</span><span class="op">[</span><span class="op">-</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span>
+<span></span>
 <span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/cv.bal.psa.html">cv.bal.psa</a></span><span class="op">(</span>covariates <span class="op">=</span> <span class="va">covars</span>, </span>
 <span>                        treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>,</span>
-<span>                        propensity <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span>,</span>
+<span>                        propensity <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">ps</span>,</span>
 <span>                        strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-6-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-<section id="数值变量的协变量平衡图" class="level4" data-number="2.1.2.1"><h4 data-number="2.1.2.1" class="anchored" data-anchor-id="数值变量的协变量平衡图">
-<span class="header-section-number">2.1.2.1</span> 数值变量的协变量平衡图</h4>
+</section><section id="数值型协变量平衡图" class="level3" data-number="3.4.2"><h3 data-number="3.4.2" class="anchored" data-anchor-id="数值型协变量平衡图">
+<span class="header-section-number">3.4.2</span> 数值型协变量平衡图</h3>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb7"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/box.psa.html">box.psa</a></span><span class="op">(</span>continuous <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">age</span>, </span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/box.psa.html">box.psa</a></span><span class="op">(</span>continuous <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">age</span>, </span>
 <span>                     treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, </span>
 <span>                     strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata</span>,</span>
 <span>                     xlab <span class="op">=</span> <span class="st">"Strata"</span>, </span>
@@ -338,15 +405,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>                     main <span class="op">=</span> <span class="st">'Covariate: age'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
-</section><section id="分类变量的协变量平衡图" class="level4" data-number="2.1.2.2"><h4 data-number="2.1.2.2" class="anchored" data-anchor-id="分类变量的协变量平衡图">
-<span class="header-section-number">2.1.2.2</span> 分类变量的协变量平衡图</h4>
+</section><section id="分类型协变量平衡图" class="level3" data-number="3.4.3"><h3 data-number="3.4.3" class="anchored" data-anchor-id="分类型协变量平衡图">
+<span class="header-section-number">3.4.3</span> 分类型协变量平衡图</h3>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/cat.psa.html">cat.psa</a></span><span class="op">(</span>categorical <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">nodegr</span>, </span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/cat.psa.html">cat.psa</a></span><span class="op">(</span>categorical <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">nodegr</span>, </span>
 <span>                     treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, </span>
 <span>                     strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata</span>, </span>
 <span>                     xlab <span class="op">=</span> <span class="st">'Strata'</span>,</span>
@@ -354,7 +421,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span>                     main <span class="op">=</span> <span class="st">'Covariate: nodegr'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-8-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-13-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -363,15 +430,68 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 #&gt; 0   0   0   0 0.036 0.039   0 0.333 0.383 0.675 0.714
 #&gt; 1   1   1   1 0.964 0.961   1 0.667 0.617 0.325 0.286</code></pre>
 </div>
-</section></section></section><section id="估计因果效应" class="level2" data-number="2.2"><h2 data-number="2.2" class="anchored" data-anchor-id="估计因果效应">
-<span class="header-section-number">2.2</span> 估计因果效应</h2>
+</section></section><section id="估计因果效应" class="level2" data-number="3.5"><h2 data-number="3.5" class="anchored" data-anchor-id="估计因果效应">
+<span class="header-section-number">3.5</span> 估计因果效应</h2>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/loess.psa.html">loess.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
-<span>                       treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>,</span>
-<span>                       propensity <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_ps</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lalonde</span> <span class="op">%&gt;%</span> </span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="va">re78</span>, color <span class="op">=</span> <span class="va">treat</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">geom_point</span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_smooth</span><span class="op">(</span>method <span class="op">=</span> <span class="st">'loess'</span>, formula <span class="op">=</span> <span class="va">y</span> <span class="op">~</span> <span class="va">x</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">theme</span><span class="op">(</span>legend.position <span class="op">=</span> <span class="st">'bottom'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-14-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>具有大约 95% 置信区间（灰色）的 Loess 回归线在整个倾向得分范围内重叠，说明异质或不均匀</p>
+<section id="分层" class="level3" data-number="3.5.1"><h3 data-number="3.5.1" class="anchored" data-anchor-id="分层">
+<span class="header-section-number">3.5.1</span> 分层</h3>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/numeric.html">as.numeric</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span><span class="op">)</span><span class="op">-</span><span class="fl">1</span></span>
+<span><span class="va">dat</span> <span class="op">&lt;-</span> <span class="va">lalonde</span> <span class="op">|&gt;</span> <span class="fu">mutate</span><span class="op">(</span></span>
+<span>    ate_weight <span class="op">=</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/calculate_ps_weights.html">calculate_ps_weights</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">ps</span>, estimand <span class="op">=</span> <span class="st">'ATE'</span><span class="op">)</span>,</span>
+<span>    att_weight <span class="op">=</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/calculate_ps_weights.html">calculate_ps_weights</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">ps</span>, estimand <span class="op">=</span> <span class="st">'ATT'</span><span class="op">)</span>,</span>
+<span>    atc_weight <span class="op">=</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/calculate_ps_weights.html">calculate_ps_weights</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">ps</span>, estimand <span class="op">=</span> <span class="st">'ATC'</span><span class="op">)</span>,</span>
+<span>    atm_weight <span class="op">=</span> <span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/calculate_ps_weights.html">calculate_ps_weights</a></span><span class="op">(</span><span class="va">treat</span>, <span class="va">ps</span>, estimand <span class="op">=</span> <span class="st">'ATM'</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu">ggplot</span><span class="op">(</span><span class="va">dat</span>, <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, color <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>    <span class="fu">geom_density</span><span class="op">(</span><span class="fu">aes</span><span class="op">(</span>fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">factor</a></span><span class="op">(</span><span class="va">treat</span><span class="op">)</span><span class="op">)</span>, alpha <span class="op">=</span> <span class="fl">0.2</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_vline</span><span class="op">(</span>xintercept <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">breaks</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_text</span><span class="op">(</span>data <span class="op">=</span> <span class="va">breaks5</span><span class="op">$</span><span class="va">labels</span>, </span>
+<span>              <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">xmid</span>, y <span class="op">=</span> <span class="fl">0</span>, label <span class="op">=</span> <span class="va">strata</span><span class="op">)</span>,</span>
+<span>              color <span class="op">=</span> <span class="st">'black'</span>, vjust <span class="op">=</span> <span class="fl">0</span>, size <span class="op">=</span> <span class="fl">4</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">xlab</span><span class="op">(</span><span class="st">'Propensity Score'</span><span class="op">)</span> <span class="op">+</span> <span class="fu">ylab</span><span class="op">(</span><span class="st">'Density'</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">xlim</span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-15-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">psa</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/psa/man/stratification_plot.html">stratification_plot</a></span><span class="op">(</span>ps <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">ps</span>,</span>
+<span>                    treatment <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">treat</span>,</span>
+<span>                    outcome <span class="op">=</span> <span class="va">dat</span><span class="op">$</span><span class="va">re78</span>, </span>
+<span>                    n_strata <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-16-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/loess.psa.html">loess.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>,</span>
+<span>                       treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>,</span>
+<span>                       propensity <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">ps</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-17-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -397,7 +517,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 #&gt; 9        22       22 5.182703 6.981383  1.7986801
 #&gt; 10       18       27 6.047529 7.820786  1.7732573
 
-psa::loess_plot(ps = lalonde$lr_ps,
+psa::loess_plot(ps = lalonde$ps,
                 outcome = log(lalonde$re78 + 1),
                 treatment = lalonde$treat == 1,
                 outcomeTitle = 'log(re78)',
@@ -411,18 +531,21 @@ psa::loess_plot(ps = lalonde$lr_ps,
                 method = 'loess')</code></pre>
 <div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-17-2.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
 </div>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/circ.psa.html">circ.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>, </span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">PSAgraphics</span><span class="fu">::</span><span class="fu"><a href="https://jbryer.github.io/PSAgraphics/reference/circ.psa.html">circ.psa</a></span><span class="op">(</span>response <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Log.html">log</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">re78</span> <span class="op">+</span> <span class="fl">1</span><span class="op">)</span>, </span>
 <span>                      treatment <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>, </span>
-<span>                      strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>                      strata <span class="op">=</span> <span class="va">lalonde</span><span class="op">$</span><span class="va">lr_strata5</span>,</span>
+<span>                      revc <span class="op">=</span> <span class="cn">T</span>,</span>
+<span>                      xlab <span class="op">=</span> <span class="st">'Treatment'</span>,</span>
+<span>                      ylab <span class="op">=</span> <span class="st">'Control'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-18-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
@@ -434,45 +557,152 @@ psa::loess_plot(ps = lalonde$lr_ps,
 #&gt; D      42     47    4.705981   6.208840
 #&gt; E      40     49    5.783529   7.576461
 #&gt; 
-#&gt; $wtd.Mn.FALSE
-#&gt; [1] 5.478567
-#&gt; 
 #&gt; $wtd.Mn.TRUE
 #&gt; [1] 6.394013
 #&gt; 
+#&gt; $wtd.Mn.FALSE
+#&gt; [1] 5.478567
+#&gt; 
 #&gt; $ATE
-#&gt; [1] 0.9154463
+#&gt; [1] -0.9154463
 #&gt; 
 #&gt; $se.wtd
 #&gt; [1] 0.394155
 #&gt; 
 #&gt; $approx.t
-#&gt; [1] 2.322554
+#&gt; [1] -2.322554
 #&gt; 
 #&gt; $df
 #&gt; [1] 435
 #&gt; 
 #&gt; $CI.95
-#&gt; [1] 0.1407612 1.6901314</code></pre>
+#&gt; [1] -1.6901314 -0.1407612</code></pre>
 </div>
-</section><section id="敏感性分析" class="level2" data-number="2.3"><h2 data-number="2.3" class="anchored" data-anchor-id="敏感性分析">
-<span class="header-section-number">2.3</span> 敏感性分析</h2>
-<p>评估该效果的稳健性</p>
-<section id="估计倾向得分分类树" class="level3" data-number="2.3.1"><h3 data-number="2.3.1" class="anchored" data-anchor-id="估计倾向得分分类树">
-<span class="header-section-number">2.3.1</span> 估计倾向得分（分类树）</h3>
+<p>将绘制每个层的平均处理（x 轴）与对照（y 轴）的对比。均值被投影到垂直于单位线的线（即线y=x）， 以便刻度线表示差异的分布。绿色条对应于 95% 置信区间。圆圈的大小与每个层内的样本大小成正比。 因为y=x落在该线上的点表示零差（即y−x=0). 推而广之，如果绿线表示的置信区间跨越单位线，则无法否定原假设。然而，在此示例中，存在统计学上显著的处理效果。</p>
+</section><section id="平均治疗效应ate" class="level3" data-number="3.5.2"><h3 data-number="3.5.2" class="anchored" data-anchor-id="平均治疗效应ate">
+<span class="header-section-number">3.5.2</span> 平均治疗效应ATE</h3>
 <div class="cell">
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span>
-<span><span class="va">tree_out</span> <span class="op">&lt;-</span> <span class="fu">tree</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tree/man/tree.html">tree</a></span><span class="op">(</span><span class="va">lalonde_formu</span>,</span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">ate_weight</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"skyblue2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">ate_weight</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"pink2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggtitle</span><span class="op">(</span><span class="st">'Average Treatment Effect (ATE)'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-19-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="接受治疗者的平均治疗效果-att" class="level3" data-number="3.5.3"><h3 data-number="3.5.3" class="anchored" data-anchor-id="接受治疗者的平均治疗效果-att">
+<span class="header-section-number">3.5.3</span> <strong>接受治疗者的平均治疗效果 （ATT）</strong>
+</h3>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">att_weight</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"skyblue2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">att_weight</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"pink2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggtitle</span><span class="op">(</span><span class="st">'Average Treatment Effect Among the Treated (ATT)'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="对照组的平均治疗效果-atc" class="level3" data-number="3.5.4"><h3 data-number="3.5.4" class="anchored" data-anchor-id="对照组的平均治疗效果-atc">
+<span class="header-section-number">3.5.4</span> <strong>对照组的平均治疗效果 （ATC）</strong>
+</h3>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">atc_weight</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"skyblue2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">atc_weight</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"pink"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggtitle</span><span class="op">(</span><span class="st">'Average Treatment Effect Among the Control (ATC)'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-21-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section><section id="average-treatment-effect-among-the-evenly-matched-atm" class="level3" data-number="3.5.5"><h3 data-number="3.5.5" class="anchored" data-anchor-id="average-treatment-effect-among-the-evenly-matched-atm">
+<span class="header-section-number">3.5.5</span> <strong>Average Treatment Effect Among the Evenly Matched (ATM)</strong>
+</h3>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">ggplot</span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">1</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">atm_weight</span>, y <span class="op">=</span> <span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"skyblue2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">geom_histogram</span><span class="op">(</span>data <span class="op">=</span> <span class="va">dat</span><span class="op">[</span><span class="va">dat</span><span class="op">$</span><span class="va">treat</span> <span class="op">==</span> <span class="fl">0</span>,<span class="op">]</span>,</span>
+<span>                   <span class="fu">aes</span><span class="op">(</span>x <span class="op">=</span> <span class="va">ps</span>, weight <span class="op">=</span> <span class="va">atm_weight</span>, y <span class="op">=</span> <span class="op">-</span><span class="fu">after_stat</span><span class="op">(</span><span class="va">count</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>                   bins <span class="op">=</span> <span class="fl">50</span>, </span>
+<span>                   fill <span class="op">=</span> <span class="st">"pink2"</span>, alpha <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span> <span class="op">+</span></span>
+<span>    <span class="fu">ggtitle</span><span class="op">(</span><span class="st">'Average Treatment Effect Among the Evenly Matched (ATM)'</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</details><div class="cell-output-display">
+<div>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section></section><section id="敏感性分析" class="level2" data-number="3.6"><h2 data-number="3.6" class="anchored" data-anchor-id="敏感性分析">
+<span class="header-section-number">3.6</span> 敏感性分析</h2>
+<p>评估该效果的稳健性</p>
+<p>Rosenbaum （2012）&nbsp;建议另一种测试灵敏度的方法是测试原假设两次。我们将在这里使用分类树方法来估计倾向得分和分层。</p>
+<div class="cell">
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">tree</span><span class="op">)</span></span>
+<span><span class="va">tree_out</span> <span class="op">&lt;-</span> <span class="fu">tree</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/tree/man/tree.html">tree</a></span><span class="op">(</span><span class="va">lalonde_formula</span>,</span>
 <span>                       data <span class="op">=</span> <span class="va">lalonde</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">tree_out</span><span class="op">)</span>; <span class="fu"><a href="https://rdrr.io/r/graphics/text.html">text</a></span><span class="op">(</span><span class="va">tree_out</span><span class="op">)</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </details><div class="cell-output-display">
 <div>
-<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="672"></p>
+<figure class="figure"><p><img src="stratification_files/figure-html/unnamed-chunk-23-1.png" class="img-fluid figure-img" width="672"></p>
 </figure>
 </div>
 </div>
-<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
+<details class="code-fold"><summary>Show the code</summary><div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span></span>
 <span></span>
 <span><span class="va">lalonde</span><span class="op">$</span><span class="va">tree_ps</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">tree_out</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/table.html">table</a></span><span class="op">(</span><span class="va">lalonde</span><span class="op">$</span><span class="va">tree_ps</span>, <span class="va">lalonde</span><span class="op">$</span><span class="va">treat</span>, useNA <span class="op">=</span> <span class="st">'ifany'</span><span class="op">)</span></span>
@@ -498,7 +728,7 @@ psa::loess_plot(ps = lalonde$lr_ps,
 </div>
 
 
-</section></section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
+</section></main><!-- /main --><script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
     const mode = bsSheetEl.getAttribute("data-mode");
@@ -907,13 +1137,13 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./PSM.html" class="pagination-link" aria-label="PSM">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">PSM</span></span>
+      <a href="./matching.html" class="pagination-link" aria-label="匹配（Matching）">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./matching.html" class="pagination-link" aria-label="匹配（Matching）">
-        <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">匹配（Matching）</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./weighting.html" class="pagination-link" aria-label="加权">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">加权</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
