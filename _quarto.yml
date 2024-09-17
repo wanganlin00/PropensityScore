@@ -7,14 +7,13 @@ book:
   date: today
   chapters:
     - index.qmd
-    - part: PropensityScore.qmd
-      chapters:
-        - PSM.qmd
-        - matching.qmd
-        - stratification.qmd
-        - weighting.qmd
-        # - covariate_adjustment.qmd
-        - SensitivityAnalysis.qmd
+    - PropensityScore.qmd
+    - PSM.qmd
+    - matching.qmd
+    - stratification.qmd
+    - weighting.qmd
+    # - covariate_adjustment.qmd
+    - SensitivityAnalysis.qmd
 
 
 execute:

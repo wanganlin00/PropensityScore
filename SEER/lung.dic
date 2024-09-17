@@ -1,0 +1,44 @@
+[System]
+Output filename=H:\lung.csv
+Matrix filename=H:\lung.slm
+Database name=Incidence - SEER Research Limited-Field Data, 22 Registries, Nov 2023 Sub (2000-2021) - Linked To County Attributes - Time Dependent (1990-2022) Income/Rurality, 1969-2022 Counties
+Title1=lung
+
+[Session Options]
+Type=Case Listing
+
+[Export Options]
+GZipped=false
+Variable format=labels
+File format=DOS/Windows
+Field delimiter=comma
+Missing character="NA"
+Fields with delimiter in quotes=true
+Remove thousands separators=true
+Variable names included=true
+Column Variables as Stats=false
+
+[Variables]
+Var1Name=Patient ID
+Var1DisplayType=Formatted
+Var2Name=Sex
+Var2DisplayType=Formatted
+Var3Name=Race/ethnicity
+Var3DisplayType=Formatted
+Var4Name=Age recode with <1 year olds
+Var4DisplayType=Formatted
+Var5Name=Year of diagnosis
+Var5DisplayType=Formatted
+Var6Name=AJCC ID (2018+)
+Var6DisplayType=Formatted
+Var7Name=Radiation recode (2003+)
+Var7DisplayType=Formatted
+Var8Name=Chemotherapy recode (yes, no/unk) (2004+)
+Var8DisplayType=Formatted
+Var9Name=Combined Summary Stage (2004+)
+Var9DisplayType=Formatted
+Var10Name=RX Summ--Surg/Rad Seq (2006+)
+Var10DisplayType=Formatted
+Var11Name=Year of death recode
+Var11DisplayType=Formatted
+
