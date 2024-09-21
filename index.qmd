@@ -10,6 +10,106 @@
 
 1.  <https://hbiostat.org/data/> <https://hbiostat.org/data/repo/rhc>
 
-![](images/clipboard-3386428934.png)
+## 实现方法
 
-![](images/clipboard-1093833355.png)
+### R
+
+-   MatchIt [MatchIt: Nonparametric Preprocessing for Parametric Causal Inference](https://cran.r-project.org/web/packages/MatchIt/index.html)
+
+    -   Ho, D.E., Imai, K., King, G., and Stuart, E.A. (2011). MatchIt: Nonparametric preprocessing for parameteric causal inference. *Journal of Statistical Software* 42(8). <http://www.jstatsoft.org/v42/i08>
+
+    -   Two-step process: does matching, then user does outcome analysis (integrated with [clarify/](https://cran.r-project.org/web/packages/clarify/index.html) package for R)
+
+    -   Wide array of estimation procedures and matching methods available: nearest neighbor, Mahalanobis, caliper, exact, full, optimal, subclassification
+
+    -   Built-in numeric and graphical diagnostics
+
+-   Matching
+
+    -   Sekhon, J. S. (2011). Multivariate and propensity score matching software with automated balance optimization: The Matching package for R. *Journal of Statistical Software* 42(7). <http://www.jstatsoft.org/v42/i07>
+
+    -   Uses automated procedure to select matches, based on univariate and multivariate balance diagnostics
+
+    -   Primarily 1:M matching (where M is a positive integer), allows matching with or without replacement, caliper, exact
+
+    -   Includes built-in effect and variance estimation procedures
+
+-   twang [twang: Toolkit for Weighting and Analysis of Nonequivalent Groups](https://cran.r-project.org/web/packages/twang/index.html)
+
+    -   Ridgeway, G., McCaffrey, D., and Morral, A. (2006). twang: Toolkit for weighting and analysis of nonequivalent groups.
+
+    -   Functions for propensity score estimating and weighting, nonresponse weighting, and diagnosis of the weights
+
+    -   Primarily uses generalized boosted regression to estimate the propensity scores
+
+    -   Includes functionality for multiple group weighting, marginal structural models
+
+-   cem
+
+    -   Iacus, S.M., King, G., and Porro, G. (2008). Matching for Causal Inference Without Balance Checking. Available [here.](http://gking.harvard.edu/files/abs/cem-abs.shtml)
+
+    -   Implements coarsened exact matching
+
+    -   Can also be implemented through [MatchIt](http://gking.harvard.edu/matchit)
+
+-   optmatch <http://cran.r-project.org/web/packages/optmatch/index.html>
+
+    -   Hansen, B.B., and Fredrickson, M. (2009). optmatch: Functions for optimal matching.
+
+    -   Variable ratio, optimal, and full matching
+
+    -   Can also be implemented through [MatchIt](http://gking.harvard.edu/matchit)
+
+-   PSAgraphics [PSAgraphics: Propensity Score Analysis Graphics](https://cran.r-project.org/web/packages/PSAgraphics/index.html)
+
+    -   Helmreich, J.E. and Pruzek, R.M. (2009). PSAgraphics: An R Package to Support Propensity Score Analysis. *Journal of Statistical Software* 29(6). Available [here.](http://www.jstatsoft.org/v29/i06)
+
+    -   From webpage: "A collection of functions that primarily produce graphics to aid in a Propensity Score Analysis (PSA). Functions include: cat.psa and box.psa to test balance within strata of categorical and quantitative covariates, circ.psa for a representation of the estimated effect size by stratum, loess.psa that provides a graphic and loess based effect size estimate, and various balance functions that provide measures of the balance achieved via a PSA in a categorical covariate."
+
+-   Synth <https://cran.r-project.org/web/packages/Synth/>
+
+    -   Abadie, A., Diamond, A., and Hainmueller, H. (2011). Synth: An R Package for Synthetic Control Methods in Comparative Cast Studies. *Journal of Statistical Software* 42(13). <http://www.jstatsoft.org/v42/i13>
+
+    -   Implements weighting approach to creating synthetic control groups
+
+    -   Useful when there is a single treated unit, such as a state or country. Main idea is to form a weighted average of comparison units that, when weighted, looks like the treated unit.
+
+-   Cobalt: Covariate balance tables and plots [cobalt: Covariate Balance Tables and Plots](https://cran.r-project.org/web/packages/cobalt/index.html)
+
+    -   Generates balance tables and figures for covariates following matching, weighting, or subclassification
+
+    -   Integrated with MatchIt, twang, matching, CBPS, and ebal
+
+-   CBPS <https://cran.r-project.org/web/packages/CBPS/index.html>
+
+    -   Imai, K., and Ratkovic, M. (2014). Covariate balancing propensity score. *Journal of the Royal Statistical Society Series B* 76(1): 243-263.
+
+    -   Estimates propensity score in way that automatically targets balance
+
+    -   Also includes functionality for marginal structural models, three- and four-valued treatment levels, and continuous treatments
+
+-   ebal: Entropy reweighting to create balanced samples <https://cran.r-project.org/web/packages/ebal/index.html>
+
+    -   Hainmueller, J. (2012). Entropy balancing for causal effects: A multivariate reweighting method to produce balanced samples in observational studies. *Political Analysis* 20: 25-46.
+
+    -   Reweights dataset such that covariate distributions in reweighted data satisfy a set of user specified moment conditions.
+
+-   rbounds: An R package for sensitivity analysis with matched data (L. Keele). [rbounds: Perform Rosenbaum Bounds Sensitivity Tests for Matched and Unmatched Data](https://cran.r-project.org/web/packages/rbounds/index.html)
+
+-   sensitivity function in twang package (G. Ridgeway et al.).
+
+### SPSS
+
+-   Propensity score matching in SPSS <http://arxiv.org/ftp/arxiv/papers/1201/1201.6385.pdf>
+
+    -   Thoemmes, F. (2012). Propensity score matching in SPSS. <http://sourceforge.net/projects/psmspss/files/>
+
+    -   Nearest neighbor propensity score matching with various options (with/without replacement, calipers, k to 1, etc.)
+
+    -   Detailed balance statistics and graphs
+
+    -   Actually calls MatchIt using a point and click interface
+
+### Excel
+
+-   Love, T.E. (2008) Spreadsheet-based sensitivity analysis calculations for matched samples. Center for Health Care Research & Policy, Case Western Reserve University. [http://www.chrp.org/propensity/](http://www.chrp.org/propensity), <http://www.chrp.org/propensity/sensitivitydocumentation.pdf>, <http://www.chrp.org/propensity/sensitivityspreadsheet.xls>
