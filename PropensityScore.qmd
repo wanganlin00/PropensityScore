@@ -4,6 +4,12 @@
 
 ## 原理
 
+A： risk factors，例如治疗、干预、暴露
+
+L：confounding factors，例如年龄、性别、bmi
+
+Y：outcome，例如是否死亡，是否患病，预后
+
 ### 预测目标
 
 ![](images/clipboard-3336473297.png)
@@ -12,13 +18,7 @@
 
 ![](images/clipboard-3139417557.png)
 
-A： risk factors，例如治疗、干预、暴露
-
-L：confounding factors，例如年龄、性别、bmi
-
-Y：outcome，例如是否死亡，是否患病
-
-#### 反事实框架
+### 反事实框架
 
 因果推断的基本难题：2个实际结果，2个反事实(Counterfactual)结果
 
@@ -26,7 +26,9 @@ $$
 Y=A\times Y(A=1) +(1-A)\times Y(A=0) \\ 其中A=0 或 1\\
 $$
 
-***Rubin’s Causal Model***
+## ***Rubin’s Causal Model***
+
+### TE
 
 个体处理效应：
 
@@ -41,54 +43,88 @@ $$
 $$
 
 ```{r}
-require(kableExtra)
-Person <- c("John","Jim","Jake","Cody","Luke")
-Y1 <- c( 195, 100, 210, 155, 165)
-Y0 <- c(245, 160, 270, 210, 230)
-PotentialOutcomes <- data.frame(Person, Y1, Y0, TE = Y1-Y0)
-mean.values <- c(NA, mean(PotentialOutcomes$Y1),
-                 mean(PotentialOutcomes$Y0),
-                 mean(PotentialOutcomes$TE))
-PotentialOutcomes <- rbind(PotentialOutcomes, mean.values)
-kable(PotentialOutcomes, booktabs = TRUE, 
-             col.names = c("Person", "Y(1)", "Y(0)", "TE")) %>%
-  row_spec(6, bold = T, color = "white", background = "#D7261E")
+library(flextable)
+set_flextable_defaults(
+  font.family = "Arial", font.size = 10, 
+  border.color = "gray", big.mark = "")
+
+PotentialOutcomes <- tibble(
+    Person = c("John", "Jim", "Jake", "Cody", "Luke"),
+    Y1 = c(195, 100, 210, 155, 165),
+    Y0 = c(245, 160, 270, 210, 230),
+    ITE = Y1 - Y0
+)
+mean_values <- c("",str_glue("E(Y1)={ mean(PotentialOutcomes$Y1)}"),
+                 str_glue("E(Y0)= {mean(PotentialOutcomes$Y0)}"),
+                 str_glue("ATE ={mean(PotentialOutcomes$ITE)}"))
+PotentialOutcomes <- rbind(PotentialOutcomes, mean_values)
+
+
+ flextable(PotentialOutcomes) %>% 
+  bold(part = "header") %>% 
+     highlight(i = 6 ) %>% 
+     set_table_properties(layout = "autofit")
 ```
 
 ```{r}
-Person <- c("John","Jim","Jake","Cody","Luke")
-Y1 <- c( NA, 100, NA, 155, NA)
-Y0 <- c(245, NA, 270, NA, 230)
-PotentialOutcomes <- data.frame(Person, Y1, Y0, TE = Y1-Y0)
-mean.values <- c(NA, mean(PotentialOutcomes$Y1, na.rm = TRUE),
-                 mean(PotentialOutcomes$Y0, na.rm = TRUE),
-                 mean(PotentialOutcomes$TE))
-PotentialOutcomes <- rbind(PotentialOutcomes, round(mean.values,1))
-PotentialOutcomes[6,4] <- round(mean(PotentialOutcomes$Y1, na.rm = TRUE)- 
-                 mean(PotentialOutcomes$Y0, na.rm = TRUE),1)
+ActualOutcomes <- tibble(
+    Person = c("John", "Jim", "Jake", "Cody", "Luke"),
+    Y1 = c( NA, 100, NA, 155, NA),
+    Y0 = c(245, NA, 270, NA, 230),
+    ITE = Y1 - Y0
+)
+mean_values <- c("",str_glue("E(Y1)={ mean(ActualOutcomes$Y1, na.rm=T)%>% round(digits = 1)}"),
+                 str_glue("E(Y0)= {mean(ActualOutcomes$Y0,na.rm = TRUE)%>% round(digits = 1)}"),
+                 str_glue("ATE ={ (mean(ActualOutcomes$Y1, na.rm=T) - 
+                          mean(ActualOutcomes$Y0,na.rm = TRUE)) %>% round(digits = 1)}"))
+
+ActualOutcomes <- rbind(ActualOutcomes, mean_values )
 
 
-kable(PotentialOutcomes, booktabs = TRUE, 
-             col.names = c("Person", "Y(1)", "Y(0)", "TE")) %>%
-  row_spec(6, bold = T, color = "white", background = "#D7261E")
+ flextable(ActualOutcomes) %>% 
+  bold(part = "header") %>% 
+     highlight(i = 6 ) %>% 
+     set_table_properties(layout = "autofit")
 ```
+
+`-120.8` 从上面的潜在结果数据表中获得的ATE 不同。部分原因是由于有限样本偏差（只有 5 个数据点）而不是无限总体。如果我们有一个足够大的样本，我们预计估计值将接近真实的ATE `-58` 。
 
 ```{r}
-Person <- c("John","Jim","Jake","Cody","Luke")
-A <- c( 0, 1, 0, 1, 0)
-Y <- c(245, 100, 270, 155, 230)
-RealOutcomes <- data.frame(Person, A, Y)
-kable(RealOutcomes, booktabs = TRUE, 
-             col.names = c("Person", "A", "Y")) 
-round(coef(lm(Y~A)),1)
+RealOutcomes <- tibble(
+    Person = c("John", "Jim", "Jake", "Cody", "Luke"),
+    Y1 = c( NA, 100, NA, 155, NA),
+    Y0 = c(245, NA, 270, NA, 230),
+    ITE = Y1 - Y0,
+    A = c( 0, 1, 0, 1, 0),
+    Y = c(245, 100, 270, 155, 230)
+)
+library(broom)
+
+lm(Y ~ A, data = RealOutcomes) %>%
+    tidy() %>%
+    flextable() %>%
+    bold(part = "header") %>%
+    colformat_num(
+        col_keys = c("estimate", "std.error", "statistic", "p.value"),
+        digits = 3
+    ) %>%
+    width(width = 1.5) %>%
+    align(align = "center", part = "all") %>%
+    flextable::compose(j = "p.value", value = as_paragraph(as_chunk(
+        p.value,
+        formatter = function(x) {
+            ifelse(x < 0.001, "<0.001", sprintf("%.3f", x))
+        }
+    )))
+
 ```
 
-`-120.8` 从上面的潜在结果数据表中获得的ATE 不同。部分原因是由于有限样本偏差（只有 5 个数据点）而不是无限总体。如果我们有一个足够大的样本，我们预计估计值将接近真实的ATE `-58`
+### ATT
 
 Average Treatment Effect Among the Treated (ATT)
 
 $$
-\widehat {ATT} =E(Y^1-Y^0|X=1)=E(Y^1|X=1)-E(Y^0|X=1)
+\widehat {ATT} =E(Y^1-Y^0|A=1)=E(Y^1|A=1)-E(Y^0|A=1)
 $$
 
 ```{r}
@@ -97,15 +133,19 @@ Y1 <- c( 195, 100, 210, 155, 165)
 Y0 <- rep(NA, length(Y1))
 Treated <- data.frame(Person, Y1, Y0, TE = Y1-Y0)
 Treated[6,2] <- mean(Treated$Y1)
-kable(Treated, booktabs = TRUE, 
-             col.names = c("Person", "Y(1)", "Y(0)", "TE"))%>%
-  row_spec(6, bold = T, color = "white", background = "#D7261E")
+
+ flextable(Treated) %>% 
+  bold(part = "header") %>% 
+     highlight(i = 6 ) %>% 
+     set_table_properties(layout = "autofit")
 ```
+
+### ATC
 
 Average Treatment Effect Among the Control (ATC)
 
 $$
-\widehat {ATC} =E(Y^1-Y^0|X=0)=E(Y^1|X=0)-E(Y^0|X=0)
+\widehat {ATC} =E(Y^1-Y^0|A=0)=E(Y^1|A=0)-E(Y^0|A=0)
 $$
 
 ```{r}
@@ -114,9 +154,11 @@ Y0 <- c( 245, 160, 270, 210, 165)
 Y1 <- rep(NA, length(Y0))
 Untreated <- data.frame(Person, Y1, Y0, TE = Y1-Y0)
 Untreated[6,3] <- mean(Untreated$Y0)
-kable(Untreated, booktabs = TRUE, 
-             col.names = c("Person", "Y(1)", "Y(0)", "TE"))%>%
-  row_spec(6, bold = T, color = "white", background = "#D7261E")
+
+flextable(Untreated) %>% 
+  bold(part = "header") %>% 
+     highlight(i = 6 ) %>% 
+     set_table_properties(layout = "autofit")
 ```
 
 ::: callout-note
@@ -125,28 +167,28 @@ kable(Untreated, booktabs = TRUE,
 -   在观察性研究中，ATT 和 ATE 不一定相同。
 :::
 
+### ATM
+
 **Average Treatment Effect Among the Evenly Matched (ATM)** 专为倾向得分加权开发的相对较新的估计值，但与进行一对一匹配时的估计值密切相关。
 
 $$
 ATM_d=E(Y_1-Y_0|M_d=1)
 $$
 
-### Identifiability Assumptions
+## Identifiability Assumptions
 
-|                 |              |                                                              |
-|-----------------|--------------|--------------------------------------------------------------|
-| Exchangeability | Y(1),Y(0)⊥A  | Treatment assignment is independent of the potential outcome |
-| Positivity      | 0\<P(A=1)\<1 | Subjects are eligible to receive both treatment              |
-| Consistency     | Y=Y(a)∀A=a   | No multiple version of the treatment                         |
-| No interference |              | Treated one patient will not impact outcome for others       |
+|                 |                       |                                                                |
+|-----------------|-----------------------|----------------------------------------------------------------|
+| Exchangeability | Y(1),Y(0)⊥A(条件独立) | 给定混杂变量，接受与不接受治疗的个体在潜在结果上是可交换的     |
+| Positivity      | 0\<P(A=1 \| X)\<1     | 每个个体都有接受或不接受治疗的可能性                           |
+| Consistency     | Y=Y(a) ∀A=a           | 不存在多种版本的治疗或混淆的暴露定义                           |
+| No interference |                       | 个体间不存在干扰效应。一个个体接受治疗不会影响到其他个体的结果 |
 
 ## 预处理
 
-用于倾向性评分的数据要进行一些预处理，比如因子化 和 **缺失值处理** 如算法插补（KNN、随机森林等），
+用于倾向性评分的数据要进行一些预处理，比如因子化 和 **缺失值处理** 如算法插补（KNN、随机森林、多重插补等）
 
-## 流程
-
-### 估计倾向得分：暴露模型
+## 估计倾向得分：暴露模型
 
 倾向得分是给定一组观察到的 covaraites 接受治疗、干预或暴露的条件概率 。
 
@@ -192,7 +234,7 @@ PS 值的估计是**以处理因素作为因变量，其他混杂因素作为自
 | Random Forest ([Ho 1995](https://ehsanx.github.io/psw/balance.html#ref-ho1995random))                                       |                    | Yes (Y∼A+L)                             |
 +-----------------------------------------------------------------------------------------------------------------------------+--------------------+-----------------------------------------+
 
-### 平衡倾向得分方法
+## 平衡倾向得分方法
 
 倾向性评分只是一个分数（条件概率），自己并没有均衡协变量（混杂因素）的能力，利用 PS 值均衡组间协变量分布的方法有**匹配（matching）**、**分层（stratification）**、**协变量调整（covariate adjustment, PS用作协变量）**和**加权（weighting）**等。
 
@@ -208,7 +250,7 @@ Statistical tests are affected by sample size
 
 `PSAgraphics`标准化的效应大小和图形表示，建议effect sizes小于 0.1。 连续变量的平衡诊断箱线图，分类变量的条形图
 
-#### standardized mean differences (SMD)
+### standardized mean differences (SMD)
 
 $$
 SMD_{continuous} = \frac{\bar{L}_{A=1} - \bar{L}_{A=0}}{\sqrt{\frac{(n_1 - 1) \cdot s^2_{A=1} + (n_0 - 1) \cdot s^2_{A=0}}{n_1 + n_0 - 2}}}
@@ -224,11 +266,11 @@ $$
 
 一般认为**SMD\<0.1**即可
 
-#### Variance ratio（VR）
+### Variance ratio（VR）
 
 cut-points： **0.5\~2**
 
-#### overlapping histograms
+### overlapping histograms
 
 -   如果存在基线协变量空间，其中有暴露的患者，但没有对照，则会出现“缺乏完全重叠”，反之亦然。
 
@@ -242,7 +284,7 @@ love plot
 
 balance tables
 
-### 估计因果效应：结局建模
+## 估计因果效应：结局建模
 
 outcome modelling
 
@@ -256,7 +298,7 @@ $$
 
 Variance estimation: Cluster options, Bootstrap options
 
-### **敏感性分析报告**
+## 敏感性分析
 
 在研究问题和基本假设的背景下报告结果并解释治疗效果估计。
 
